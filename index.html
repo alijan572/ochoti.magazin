@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🏪 Ҳисоботи рӯзона ва моҳона</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0b1c2f, #1a3347, #0f2a3f);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+        }
+        
+        .app-container {
+            max-width: 440px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            padding: 24px 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* Навигатсия */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 28px;
+            background: #f0f5ff;
+            border-radius: 60px;
+            padding: 6px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 14px 8px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #2d3c4b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .nav-tab.active {
+            background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
+            color: white;
+            box-shadow: 0 10px 20px -5px #1e4b8a;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(30, 75, 138, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(30, 75, 138, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(30, 75, 138, 0); }
+        }
+        
+        .fade-in {
+            animation: slideUp 0.4s ease forwards;
+        }
+
+        .shop-screen, .report-screen, .monthly-screen, .history-screen {
+            display: none;
+        }
+        
+        .shop-screen.active, .report-screen.active, .monthly-screen.active, .history-screen.active {
+            display: block;
+            animation: slideUp 0.4s ease;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e4b8a, #0f3a6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #5a6f84;
+            margin-bottom: 16px;
+        }
+
+        /* Экран интихоби мағоза */
+        .shop-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 25px 0 20px;
+        }
+        
+        .shop-card {
+            background: linear-gradient(145deg, #ffffff, #f8faff);
+            border: 2px solid #d9e2ef;
+            border-radius: 28px;
+            padding: 24px;
+            color: #1f2a3f;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .shop-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(30, 75, 138, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .shop-card:hover::before {
+            left: 100%;
+        }
+        
+        .shop-card:hover {
+            transform: translateY(-3px);
+            border-color: #1e4b8a;
+            box-shadow: 0 15px 30px rgba(30, 75, 138, 0.2);
+        }
+        
+        .shop-card.selected {
+            background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
+            color: white;
+            border-color: #1e4b8a;
+            box-shadow: 0 15px 30px rgba(30, 75, 138, 0.3);
+        }
+        
+        .shop-card.selected::after {
+            content: '✓';
+            position: absolute;
+            right: 25px;
+            font-size: 1.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 18px;
+            font-size: 1rem;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 25px -8px #1e4b8a;
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.97);
+            box-shadow: 0 5px 15px -5px #1e4b8a;
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .btn-secondary {
+            background: white;
+            border: 2px solid #1e4b8a;
+            color: #1e4b8a;
+            border-radius: 20px;
+            padding: 16px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-secondary:active {
+            background: #1e4b8a;
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(145deg, #0d9488, #0f766e);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 18px;
+            font-size: 1rem;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 15px 25px -8px #0d9488;
+        }
+
+        /* Экран ҳисобот */
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid #e0e9f5;
+        }
+        
+        .shop-name {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e4b8a, #0f3a6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .date-input {
+            background: #f5f9ff;
+            border: 2px solid #d9e2ef;
+            border-radius: 16px;
+            padding: 12px 16px;
+            color: #1f2a3f;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: #1e4b8a;
+            box-shadow: 0 0 0 3px rgba(30, 75, 138, 0.1);
+        }
+
+        .admin-field {
+            margin-bottom: 28px;
+        }
+        
+        .admin-field label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #5a6f84;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .admin-field input {
+            width: 100%;
+            background: #f5f9ff;
+            border: 2px solid #d9e2ef;
+            border-radius: 18px;
+            padding: 18px;
+            color: #1f2a3f;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .admin-field input:focus {
+            outline: none;
+            border-color: #1e4b8a;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(30, 75, 138, 0.1);
+        }
+
+        .revenue-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        
+        .revenue-item {
+            background: #f5f9ff;
+            border: 2px solid #d9e2ef;
+            border-radius: 24px;
+            padding: 18px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .revenue-item:focus-within {
+            border-color: #1e4b8a;
+            background: white;
+            box-shadow: 0 10px 25px -10px #1e4b8a;
+            transform: translateY(-2px);
+        }
+        
+        .revenue-item label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #5a6f84;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .revenue-item input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #0a1a2a;
+            font-size: 1.6rem;
+            font-weight: 700;
+            outline: none;
+        }
+        
+        .revenue-item input[readonly] {
+            color: #1e4b8a;
+        }
+
+        /* Возврат */
+        .return-section {
+            background: #fff4e5;
+            border: 2px solid #ffd79c;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 28px;
+        }
+        
+        .return-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #b45309;
+            margin-bottom: 16px;
+        }
+        
+        .return-grid {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .return-item {
+            flex: 1;
+        }
+        
+        .return-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 6px;
+        }
+        
+        .return-item input {
+            width: 100%;
+            background: white;
+            border: 2px solid #ffd79c;
+            border-radius: 16px;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .return-item input:focus {
+            outline: none;
+            border-color: #b45309;
+            box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.1);
+        }
+
+        .safe-section {
+            background: linear-gradient(145deg, #f5f9ff, #e8f0fe);
+            border: 2px solid #d9e2ef;
+            border-radius: 28px;
+            padding: 22px;
+            margin-bottom: 28px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+        }
+        
+        .safe-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1e4b8a;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+        }
+        
+        .safe-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .safe-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+        
+        .safe-label {
+            color: #4b5e77;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .safe-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e4b8a;
+        }
+
+        /* Прогресс-бар дня */
+        .progress-bar {
+            background: #e0e9f5;
+            border-radius: 30px;
+            height: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #1e4b8a, #3b7ab6);
+            height: 100%;
+            width: 0%;
+            border-radius: 30px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #5a6f84;
+            margin-bottom: 10px;
+        }
+
+        .expenses-section {
+            margin-bottom: 28px;
+        }
+        
+        .expenses-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        
+        .btn-add {
+            background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
+            border: none;
+            border-radius: 40px;
+            padding: 12px 24px;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px -5px #1e4b8a;
+        }
+        
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px -8px #1e4b8a;
+        }
+        
+        .expense-row {
+            background: white;
+            border: 2px solid #d9e2ef;
+            border-radius: 26px;
+            padding: 20px;
+            margin-bottom: 16px;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+        
+        .expense-desc {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #d9e2ef;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        
+        .expense-desc:focus {
+            outline: none;
+            border-color: #1e4b8a;
+        }
+        
+        .expense-type-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .expense-type, .expense-category {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #d9e2ef;
+            border-radius: 18px;
+            background: white;
+            font-weight: 500;
+        }
+        
+        .expense-type:focus, .expense-category:focus {
+            outline: none;
+            border-color: #1e4b8a;
+        }
+        
+        .expense-amount {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #d9e2ef;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .expense-amount:focus {
+            outline: none;
+            border-color: #1e4b8a;
+        }
+        
+        .remove-btn {
+            background: #fee2e2;
+            border: 2px solid #fecaca;
+            border-radius: 18px;
+            padding: 14px;
+            color: #b91c1c;
+            width: 100%;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .remove-btn:hover {
+            background: #fecaca;
+            border-color: #ef4444;
+        }
+
+        .summary-block {
+            background: linear-gradient(145deg, #0f2a3f, #0a1e2f);
+            border-radius: 32px;
+            padding: 28px;
+            margin: 28px 0;
+            box-shadow: 0 25px 40px -12px #0a1e2f;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .summary-block::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(30,75,138,0.2) 0%, transparent 70%);
+            animation: pulse 4s infinite;
+        }
+        
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .summary-header span {
+            color: white;
+            font-weight: 600;
+        }
+        
+        .summary-totals {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+        }
+        
+        .summary-label {
+            color: rgba(255,255,255,0.8);
+            font-weight: 500;
+        }
+        
+        .summary-amount {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+        
+        .expenses-summary {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .expenses-summary-title {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        
+        .expense-summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .expense-summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .expense-summary-amount {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+        
+        .safe-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .safe-summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .safe-summary-item .label {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .safe-summary-item .value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        /* Экран моҳона */
+        .monthly-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+        
+        .month-selector {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .month-btn {
+            background: #f0f5ff;
+            border: 2px solid #d9e2ef;
+            border-radius: 50px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .month-btn:hover {
+            background: #1e4b8a;
+            color: white;
+            border-color: #1e4b8a;
+        }
+        
+        .current-month {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e4b8a;
+        }
+        
+        .stats-grid-monthly {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(145deg, #f5f9ff, #e8f0fe);
+            border: 2px solid #d9e2ef;
+            border-radius: 24px;
+            padding: 20px 18px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: #1e4b8a;
+            box-shadow: 0 15px 25px -10px #1e4b8a;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #5a6f84;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e4b8a;
+        }
+        
+        .stat-value.positive {
+            color: #0d9488;
+        }
+        
+        .stat-value.negative {
+            color: #b91c1c;
+        }
+
+        /* Таблицаи рӯзона */
+        .daily-table {
+            background: white;
+            border: 2px solid #d9e2ef;
+            border-radius: 28px;
+            overflow: hidden;
+            margin-bottom: 28px;
+            box-shadow: 0 10px 25px -10px rgba(0,0,0,0.1);
+        }
+        
+        .table-header {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1.5fr;
+            background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
+            color: white;
+            padding: 16px 12px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .table-row {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1.5fr;
+            padding: 14px 12px;
+            border-bottom: 1px solid #e0e9f5;
+            font-size: 0.85rem;
+            text-align: center;
+            align-items: center;
+        }
+        
+        .table-row:hover {
+            background: #f5f9ff;
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .table-date {
+            font-weight: 700;
+            color: #1e4b8a;
+        }
+        
+        .table-amount {
+            font-weight: 600;
+            color: #0f2a3f;
+        }
+        
+        .table-expenses {
+            font-size: 0.75rem;
+            color: #b45309;
+            text-align: left;
+        }
+        
+        .chart-container {
+            background: linear-gradient(145deg, #ffffff, #f5f9ff);
+            border: 2px solid #d9e2ef;
+            border-radius: 28px;
+            padding: 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 10px 25px -10px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1f2a3f;
+            margin-bottom: 20px;
+        }
+        
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 140px;
+            gap: 10px;
+        }
+        
+        .bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .bar {
+            width: 100%;
+            background: linear-gradient(to top, #1e4b8a, #3b7ab6);
+            border-radius: 12px 12px 0 0;
+            transition: height 0.3s ease;
+            box-shadow: 0 -5px 15px rgba(30,75,138,0.3);
+        }
+        
+        .bar-label {
+            margin-top: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #5a6f84;
+        }
+        
+        .expenses-table {
+            background: white;
+            border: 2px solid #d9e2ef;
+            border-radius: 28px;
+            overflow: hidden;
+            margin-bottom: 28px;
+            box-shadow: 0 10px 25px -10px rgba(0,0,0,0.1);
+        }
+        
+        .cat-table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
+            color: white;
+            padding: 18px 16px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        
+        .cat-table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            padding: 16px;
+            border-bottom: 1px solid #e0e9f5;
+            font-size: 0.95rem;
+        }
+        
+        .cat-table-row:hover {
+            background: #f5f9ff;
+        }
+        
+        .btn-export {
+            background: linear-gradient(145deg, #0d9488, #0f766e);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 18px;
+            font-size: 1rem;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            margin: 16px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 15px 25px -8px #0d9488;
+        }
+
+        /* Экран таърих */
+        .history-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .history-filters input {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #d9e2ef;
+            border-radius: 18px;
+            font-size: 0.95rem;
+        }
+        
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .history-item {
+            background: white;
+            border: 2px solid #d9e2ef;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .history-item:hover {
+            border-color: #1e4b8a;
+            transform: translateX(5px);
+        }
+        
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .history-date {
+            color: #1e4b8a;
+        }
+        
+        .history-admin {
+            color: #5a6f84;
+        }
+        
+        .history-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .history-total {
+            color: #0d9488;
+            font-weight: 700;
+        }
+        
+        .history-expenses {
+            color: #b45309;
+        }
+        
+        .history-delete {
+            background: #fee2e2;
+            border: 2px solid #fecaca;
+            border-radius: 12px;
+            padding: 8px;
+            color: #b91c1c;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .message {
+            text-align: center;
+            color: #0d9488;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 14px;
+            background: #f0fdf4;
+            border-radius: 16px;
+            border: 2px solid #86efac;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2a3f;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- Навигатсия -->
+    <div class="nav-tabs" id="navTabs">
+        <div class="nav-tab active" data-tab="shop">🏪 Мағоза</div>
+        <div class="nav-tab" data-tab="daily">📅 Рӯзона</div>
+        <div class="nav-tab" data-tab="monthly">📊 Моҳона</div>
+        <div class="nav-tab" data-tab="history">📜 Таърих</div>
+    </div>
+
+    <!-- Экрани интихоби мағоза -->
+    <div id="shopScreen" class="shop-screen active">
+        <h2>🏪 Интихоби мағоза</h2>
+        <div class="shop-grid">
+            <div class="shop-card" data-shop="F-1">🏬 F-1</div>
+            <div class="shop-card" data-shop="F-5">🏪 F-5</div>
+            <div class="shop-card" data-shop="F-7">🏫 F-7</div>
+        </div>
+        <button class="btn-primary" id="nextBtn" disabled>▶ Идома</button>
+    </div>
+
+    <!-- Экрани ҳисоботи рӯзона -->
+    <div id="reportScreen" class="report-screen">
+        <div class="header-info">
+            <span class="shop-name" id="currentShop">F-1</span>
+            <input type="date" id="reportDate" class="date-input" value="2026-03-16">
+        </div>
+
+        <!-- Прогресс-бар дня -->
+        <div class="progress-stats">
+            <span>🕐 Оғози рӯз: 09:00</span>
+            <span id="timeProgress">0%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="dayProgress" style="width: 0%;"></div>
+        </div>
+
+        <div class="admin-field">
+            <label>👤 АДМИНИСТРАТОР</label>
+            <input type="text" id="adminName" placeholder="Ному насаб" value="Аҳмадов">
+        </div>
+
+        <div class="revenue-cards">
+            <div class="revenue-item tooltip" data-tooltip="Ҳамаи фурӯш">
+                <label>🧾 ЧЕКИ УМУМӢ</label>
+                <input type="number" id="totalRevenue" value="0" placeholder="0" min="0">
+            </div>
+            <div class="revenue-item tooltip" data-tooltip="Фурӯши безнақд">
+                <label>💳 БЕЗНАЛ</label>
+                <input type="number" id="cashlessRevenue" value="0" placeholder="0" min="0">
+            </div>
+            <div class="revenue-item">
+                <label>💵 НАҚДИ ИМРӮЗА</label>
+                <input type="text" id="cashRevenue" readonly value="0">
+            </div>
+        </div>
+
+        <!-- Возврат -->
+        <div class="return-section">
+            <div class="return-title">↩️ ВОЗГАРДОНИ МАБЛАҒ (RETURN)</div>
+            <div class="return-grid">
+                <div class="return-item">
+                    <label>💵 НАҚД</label>
+                    <input type="number" id="returnCash" value="0" placeholder="0" min="0">
+                </div>
+                <div class="return-item">
+                    <label>💳 БЕЗНАЛ</label>
+                    <input type="number" id="returnCashless" value="0" placeholder="0" min="0">
+                </div>
+            </div>
+        </div>
+
+        <div class="safe-section">
+            <div class="safe-title">💰 БОҚИЯИ ДИРӮЗА</div>
+            <div class="safe-grid">
+                <div class="safe-item">
+                    <span class="safe-label">💵 НАҚД</span>
+                    <span class="safe-value" id="safeCash">21 880</span>
+                </div>
+                <div class="safe-item">
+                    <span class="safe-label">💳 БЕЗНАЛ</span>
+                    <span class="safe-value" id="safeCashless">480 215</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="expenses-section">
+            <div class="expenses-header">
+                <span class="section-title">📉 ХАРОҶОТИ ИМРӮЗА</span>
+                <button class="btn-add" id="addExpenseBtn">+ Илова</button>
+            </div>
+            <div id="expensesContainer"></div>
+        </div>
+
+        <!-- Блоки ҷамъбаст -->
+        <div class="summary-block" id="summaryBlock">
+            <div class="summary-header">
+                <span id="summaryShop">F-1</span>
+                <span id="summaryDate">16.03.2026</span>
+                <span id="summaryAdmin">Аҳмадов</span>
+            </div>
+            
+            <div class="summary-totals">
+                <div class="summary-row">
+                    <span class="summary-label">📊 ФУРӮШИ УМУМӢ</span>
+                    <span class="summary-amount" id="summaryTotal">0</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">💵 НАҚДИ ИМРӮЗА</span>
+                    <span class="summary-amount" id="summaryCash">0</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">💳 БЕЗНАЛИ ИМРӮЗА</span>
+                    <span class="summary-amount" id="summaryCashless">0</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">↩️ ВОЗГАРДОНИ НАҚД</span>
+                    <span class="summary-amount" id="summaryReturnCash">0</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">↩️ ВОЗГАРДОНИ БЕЗНАЛ</span>
+                    <span class="summary-amount" id="summaryReturnCashless">0</span>
+                </div>
+            </div>
+
+            <div class="expenses-summary" id="expensesSummary">
+                <div class="expenses-summary-title">📉 ХАРОҶОТ</div>
+                <div id="summaryExpensesList"></div>
+            </div>
+
+            <div class="safe-summary">
+                <div class="safe-summary-item">
+                    <span class="label">💰 НАҚД ДАР СЕЙФ</span>
+                    <span class="value" id="summarySafeCash">21 880</span>
+                </div>
+                <div class="safe-summary-item">
+                    <span class="label">💳 БЕЗНАЛ ДАР СЕЙФ</span>
+                    <span class="value" id="summarySafeCashless">480 215</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <button class="btn-primary" id="shareBtn">📸 МУБОДИЛАИ ҲИСОБОТ</button>
+            <button class="btn-primary" id="finishDayBtn">✅ БА АНҶОМ РАСОНИДАНИ РӮЗ</button>
+            <button class="btn-success" id="excelBtn">📥 EXCEL</button>
+            <button class="btn-secondary" id="backToShopBtn">⬅ БА ИНТИХОБИ МАҒОЗА</button>
+        </div>
+        <div id="reportMessage" class="message"></div>
+    </div>
+
+    <!-- Экрани ҳисоботи моҳона -->
+    <div id="monthlyScreen" class="monthly-screen">
+        <div class="monthly-header">
+            <span class="shop-name" id="monthlyShopName">F-1</span>
+            <div class="month-selector">
+                <div class="month-btn" id="prevMonth">←</div>
+                <span class="current-month" id="currentMonth">Март 2026</span>
+                <div class="month-btn" id="nextMonth">→</div>
+            </div>
+        </div>
+
+        <div class="stats-grid-monthly">
+            <div class="stat-card">
+                <div class="stat-label">📊 ФУРӮШИ УМУМӢ</div>
+                <div class="stat-value" id="monthlyTotal">0 ₽</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">💵 НАҚД</div>
+                <div class="stat-value" id="monthlyCash">0 ₽</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">💳 БЕЗНАЛ</div>
+                <div class="stat-value" id="monthlyCashless">0 ₽</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">📉 ХАРОҶОТ</div>
+                <div class="stat-value" id="monthlyExpense">0 ₽</div>
+            </div>
+        </div>
+
+        <!-- Таблицаи рӯзона -->
+        <div class="daily-table">
+            <div class="table-header">
+                <div>📅 Сана</div>
+                <div>💰 Фурӯш</div>
+                <div>💵 Нақд</div>
+                <div>💳 Безнал</div>
+                <div>📉 Хароҷот</div>
+            </div>
+            <div id="dailyTable"></div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">📊 ХАРОҶОТ АЗ РӮИ КАТЕГОРИЯ</div>
+            <div class="chart-bars" id="expenseChart"></div>
+        </div>
+
+        <div class="expenses-table">
+            <div class="cat-table-header">
+                <div>📋 Категория</div>
+                <div>💰 Маблағ</div>
+                <div>📊 %</div>
+            </div>
+            <div id="expenseCategoriesTable"></div>
+        </div>
+
+        <button class="btn-export" id="exportMonthlyBtn">📊 ЭКСПОРТИ МОҲОНА</button>
+        <button class="btn-secondary" id="backFromMonthlyBtn">⬅ БА АҚИБ</button>
+    </div>
+
+    <!-- Экран таърих -->
+    <div id="historyScreen" class="history-screen">
+        <h2>📜 Таърихи ҳисобот</h2>
+        
+        <div class="history-filters">
+            <input type="date" id="historyDateFilter" placeholder="Филтр аз рӯи сана">
+        </div>
+        
+        <div class="history-list" id="historyList"></div>
+        
+        <button class="btn-secondary" id="backFromHistoryBtn">⬅ БА АҚИБ</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+    (function() {
+        // Маълумотҳои ибтидоӣ
+        let shopData = {
+            'F-1': { cash: 21880, cashless: 480215 },
+            'F-5': { cash: 15200, cashless: 310500 },
+            'F-7': { cash: 36700, cashless: 602100 }
+        };
+        
+        let reportsHistory = [];
+        let currentShop = null;
+        let currentMonth = new Date();
+
+        const expenseCategories = [
+            'БОР (Товар)',
+            'АРЕНДА',
+            'КОММУНАЛӢ',
+            'МУЗДИ КОР',
+            'НАҚЛИЁТ',
+            'ДИГАР'
+        ];
+
+        // Боргирии маълумот
+        function loadData() {
+            const saved = localStorage.getItem('shopReports');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    shopData = data.shopData || shopData;
+                    reportsHistory = data.reportsHistory || [];
+                } catch (e) {}
+            }
+        }
+        
+        // Нигоҳдории маълумот
+        function saveData() {
+            localStorage.setItem('shopReports', JSON.stringify({
+                shopData: shopData,
+                reportsHistory: reportsHistory
+            }));
+        }
+        
+        loadData();
+
+        // Навигатсия
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const shopScreen = document.getElementById('shopScreen');
+        const reportScreen = document.getElementById('reportScreen');
+        const monthlyScreen = document.getElementById('monthlyScreen');
+        const historyScreen = document.getElementById('historyScreen');
+        
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                navTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                [shopScreen, reportScreen, monthlyScreen, historyScreen].forEach(s => s.classList.remove('active'));
+                
+                switch(this.dataset.tab) {
+                    case 'shop':
+                        shopScreen.classList.add('active');
+                        break;
+                    case 'daily':
+                        if (currentShop) {
+                            reportScreen.classList.add('active');
+                            updateProgressBar();
+                        } else {
+                            alert('Аввал мағозаро интихоб кунед');
+                            navTabs[0].click();
+                        }
+                        break;
+                    case 'monthly':
+                        if (currentShop) {
+                            monthlyScreen.classList.add('active');
+                            updateMonthlyData();
+                        } else {
+                            alert('Аввал мағозаро интихоб кунед');
+                            navTabs[0].click();
+                        }
+                        break;
+                    case 'history':
+                        historyScreen.classList.add('active');
+                        updateHistory();
+                        break;
+                }
+            });
+        });
+
+        // Элементҳо
+        const shopCards = document.querySelectorAll('.shop-card');
+        const nextBtn = document.getElementById('nextBtn');
+        const backToShopBtn = document.getElementById('backToShopBtn');
+        const backFromMonthlyBtn = document.getElementById('backFromMonthlyBtn');
+        const backFromHistoryBtn = document.getElementById('backFromHistoryBtn');
+        
+        const currentShopSpan = document.getElementById('currentShop');
+        const summaryShop = document.getElementById('summaryShop');
+        const monthlyShopName = document.getElementById('monthlyShopName');
+        const reportDate = document.getElementById('reportDate');
+        const summaryDate = document.getElementById('summaryDate');
+        const adminName = document.getElementById('adminName');
+        const summaryAdmin = document.getElementById('summaryAdmin');
+        
+        const totalRevenue = document.getElementById('totalRevenue');
+        const cashlessRevenue = document.getElementById('cashlessRevenue');
+        const cashRevenue = document.getElementById('cashRevenue');
+        const returnCash = document.getElementById('returnCash');
+        const returnCashless = document.getElementById('returnCashless');
+        
+        const safeCash = document.getElementById('safeCash');
+        const safeCashless = document.getElementById('safeCashless');
+        
+        const summaryTotal = document.getElementById('summaryTotal');
+        const summaryCash = document.getElementById('summaryCash');
+        const summaryCashless = document.getElementById('summaryCashless');
+        const summaryReturnCash = document.getElementById('summaryReturnCash');
+        const summaryReturnCashless = document.getElementById('summaryReturnCashless');
+        const summarySafeCash = document.getElementById('summarySafeCash');
+        const summarySafeCashless = document.getElementById('summarySafeCashless');
+        const summaryExpensesList = document.getElementById('summaryExpensesList');
+        
+        const expensesContainer = document.getElementById('expensesContainer');
+        const addExpenseBtn = document.getElementById('addExpenseBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const finishBtn = document.getElementById('finishDayBtn');
+        const excelBtn = document.getElementById('excelBtn');
+        const reportMessage = document.getElementById('reportMessage');
+
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const currentMonthSpan = document.getElementById('currentMonth');
+        const monthlyTotal = document.getElementById('monthlyTotal');
+        const monthlyCash = document.getElementById('monthlyCash');
+        const monthlyCashless = document.getElementById('monthlyCashless');
+        const monthlyExpense = document.getElementById('monthlyExpense');
+        const expenseChart = document.getElementById('expenseChart');
+        const expenseCategoriesTable = document.getElementById('expenseCategoriesTable');
+        const dailyTable = document.getElementById('dailyTable');
+        const exportMonthlyBtn = document.getElementById('exportMonthlyBtn');
+
+        const dayProgress = document.getElementById('dayProgress');
+        const timeProgress = document.getElementById('timeProgress');
+
+        // Прогресс-бар
+        function updateProgressBar() {
+            const now = new Date();
+            const start = new Date(now);
+            start.setHours(9, 0, 0);
+            const end = new Date(now);
+            end.setHours(23, 0, 0);
+            
+            if (now < start) {
+                dayProgress.style.width = '0%';
+                timeProgress.textContent = '0%';
+            } else if (now > end) {
+                dayProgress.style.width = '100%';
+                timeProgress.textContent = '100%';
+            } else {
+                const percent = ((now - start) / (end - start) * 100).toFixed(0);
+                dayProgress.style.width = percent + '%';
+                timeProgress.textContent = percent + '%';
+            }
+        }
+        
+        setInterval(updateProgressBar, 60000);
+
+        // Интихоби мағоза
+        shopCards.forEach(card => {
+            card.addEventListener('click', function() {
+                shopCards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                currentShop = this.dataset.shop;
+                nextBtn.disabled = false;
+            });
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (!currentShop) return;
+            
+            currentShopSpan.textContent = currentShop;
+            summaryShop.textContent = currentShop;
+            monthlyShopName.textContent = currentShop;
+            
+            const data = shopData[currentShop];
+            safeCash.textContent = data.cash.toLocaleString('ru-RU');
+            safeCashless.textContent = data.cashless.toLocaleString('ru-RU');
+            
+            totalRevenue.value = 0;
+            cashlessRevenue.value = 0;
+            cashRevenue.value = '0';
+            returnCash.value = 0;
+            returnCashless.value = 0;
+            adminName.value = 'Аҳмадов';
+            
+            expensesContainer.innerHTML = '';
+            addExpenseRow('', 'cash', 'БОР (Товар)', 0);
+            
+            updateDate();
+            updateAll();
+            
+            navTabs[1].click();
+        });
+
+        function updateDate() {
+            const d = reportDate.value.split('-');
+            if (d.length === 3) {
+                summaryDate.textContent = `${d[2]}.${d[1]}.${d[0]}`;
+            }
+        }
+        reportDate.addEventListener('change', updateDate);
+
+        // Иловаи хароҷот
+        function addExpenseRow(desc = '', type = 'cash', category = 'БОР (Товар)', amount = 0) {
+            const row = document.createElement('div');
+            row.className = 'expense-row';
+            
+            let categoryOptions = '';
+            expenseCategories.forEach(cat => {
+                categoryOptions += `<option value="${cat}" ${cat === category ? 'selected' : ''}>${cat}</option>`;
+            });
+            
+            row.innerHTML = `
+                <input type="text" class="expense-desc" placeholder="Таъинот" value="${desc}">
+                <div class="expense-type-row">
+                    <select class="expense-type">
+                        <option value="cash" ${type === 'cash' ? 'selected' : ''}>💵 НАҚД</option>
+                        <option value="cashless" ${type === 'cashless' ? 'selected' : ''}>💳 БЕЗНАЛ</option>
+                    </select>
+                    <select class="expense-category">
+                        ${categoryOptions}
+                    </select>
+                </div>
+                <input type="number" class="expense-amount" placeholder="Маблағ" value="${amount}" min="0" step="10">
+                <button class="remove-btn">❌ НЕСТ КАРДАН</button>
+            `;
+            
+            const removeBtn = row.querySelector('.remove-btn');
+            removeBtn.addEventListener('click', function() {
+                row.remove();
+                updateAll();
+            });
+            
+            row.querySelectorAll('input, select').forEach(el => {
+                el.addEventListener('input', updateAll);
+            });
+            
+            expensesContainer.appendChild(row);
+            updateAll();
+        }
+
+        addExpenseBtn.addEventListener('click', function() {
+            addExpenseRow('', 'cash', 'БОР (Товар)', 0);
+        });
+
+        // Ҳисобкунии ҳама
+        function updateAll() {
+            const total = Math.max(0, parseFloat(totalRevenue.value) || 0);
+            const cashless = Math.max(0, parseFloat(cashlessRevenue.value) || 0);
+            const cash = Math.max(0, total - cashless);
+            cashRevenue.value = cash;
+            
+            const returnAmtCash = Math.max(0, parseFloat(returnCash.value) || 0);
+            const returnAmtCashless = Math.max(0, parseFloat(returnCashless.value) || 0);
+            
+            const cashStart = parseFloat(safeCash.textContent.replace(/\s/g, '')) || 0;
+            const cashlessStart = parseFloat(safeCashless.textContent.replace(/\s/g, '')) || 0;
+            
+            let expenseCash = 0;
+            let expenseCashless = 0;
+            let expenseItems = [];
+            
+            document.querySelectorAll('.expense-row').forEach(row => {
+                const desc = row.querySelector('.expense-desc').value.trim() || 'хароҷот';
+                const type = row.querySelector('.expense-type').value;
+                const category = row.querySelector('.expense-category').value;
+                const amt = Math.max(0, parseFloat(row.querySelector('.expense-amount').value) || 0);
+                
+                if (amt > 0) {
+                    if (type === 'cash') expenseCash += amt;
+                    else expenseCashless += amt;
+                    expenseItems.push({ desc, type, category, amt });
+                }
+            });
+            
+            const finalCash = Math.max(0, cashStart + cash - expenseCash - returnAmtCash);
+            const finalCashless = Math.max(0, cashlessStart + cashless - expenseCashless - returnAmtCashless);
+            
+            summaryTotal.textContent = total.toLocaleString('ru-RU') + ' ₽';
+            summaryCash.textContent = cash.toLocaleString('ru-RU') + ' ₽';
+            summaryCashless.textContent = cashless.toLocaleString('ru-RU') + ' ₽';
+            summaryReturnCash.textContent = returnAmtCash.toLocaleString('ru-RU') + ' ₽';
+            summaryReturnCashless.textContent = returnAmtCashless.toLocaleString('ru-RU') + ' ₽';
+            summarySafeCash.textContent = finalCash.toLocaleString('ru-RU') + ' ₽';
+            summarySafeCashless.textContent = finalCashless.toLocaleString('ru-RU') + ' ₽';
+            
+            summaryAdmin.textContent = adminName.value.trim() || 'Админ';
+            
+            if (expenseItems.length === 0) {
+                summaryExpensesList.innerHTML = '<div class="expense-summary-item">Хароҷот нест</div>';
+            } else {
+                let html = '';
+                expenseItems.forEach(item => {
+                    html += `
+                        <div class="expense-summary-item">
+                            <span>${item.desc} (${item.type === 'cash' ? '💵' : '💳'})</span>
+                            <span class="expense-summary-amount">${item.amt.toLocaleString('ru-RU')} ₽</span>
+                        </div>
+                    `;
+                });
+                summaryExpensesList.innerHTML = html;
+            }
+        }
+
+        totalRevenue.addEventListener('input', updateAll);
+        cashlessRevenue.addEventListener('input', updateAll);
+        returnCash.addEventListener('input', updateAll);
+        returnCashless.addEventListener('input', updateAll);
+        adminName.addEventListener('input', updateAll);
+
+        // Ба анҷом расонидани рӯз
+        finishBtn.addEventListener('click', function() {
+            const total = Math.max(0, parseFloat(totalRevenue.value) || 0);
+            const cashless = Math.max(0, parseFloat(cashlessRevenue.value) || 0);
+            const cash = Math.max(0, total - cashless);
+            
+            const returnAmtCash = Math.max(0, parseFloat(returnCash.value) || 0);
+            const returnAmtCashless = Math.max(0, parseFloat(returnCashless.value) || 0);
+            
+            const cashStart = parseFloat(safeCash.textContent.replace(/\s/g, '')) || 0;
+            const cashlessStart = parseFloat(safeCashless.textContent.replace(/\s/g, '')) || 0;
+            
+            let expenseCash = 0;
+            let expenseCashless = 0;
+            const expenses = [];
+            
+            document.querySelectorAll('.expense-row').forEach(row => {
+                const desc = row.querySelector('.expense-desc').value.trim() || 'хароҷот';
+                const type = row.querySelector('.expense-type').value;
+                const category = row.querySelector('.expense-category').value;
+                const amt = Math.max(0, parseFloat(row.querySelector('.expense-amount').value) || 0);
+                
+                if (amt > 0) {
+                    if (type === 'cash') expenseCash += amt;
+                    else expenseCashless += amt;
+                    expenses.push({ desc, type, category, amt });
+                }
+            });
+            
+            const finalCash = Math.max(0, cashStart + cash - expenseCash - returnAmtCash);
+            const finalCashless = Math.max(0, cashlessStart + cashless - expenseCashless - returnAmtCashless);
+            
+            const report = {
+                id: Date.now().toString(),
+                shop: currentShop,
+                date: reportDate.value,
+                admin: adminName.value.trim() || 'Админ',
+                totalRevenue: total,
+                cashRevenue: cash,
+                cashlessRevenue: cashless,
+                returnCash: returnAmtCash,
+                returnCashless: returnAmtCashless,
+                expenses: expenses,
+                safeCash: finalCash,
+                safeCashless: finalCashless,
+                createdAt: new Date().toISOString()
+            };
+            
+            reportsHistory.push(report);
+            
+            if (currentShop) {
+                shopData[currentShop] = {
+                    cash: finalCash,
+                    cashless: finalCashless
+                };
+            }
+            
+            saveData();
+            
+            safeCash.textContent = finalCash.toLocaleString('ru-RU');
+            safeCashless.textContent = finalCashless.toLocaleString('ru-RU');
+            
+            totalRevenue.value = 0;
+            cashlessRevenue.value = 0;
+            cashRevenue.value = '0';
+            returnCash.value = 0;
+            returnCashless.value = 0;
+            expensesContainer.innerHTML = '';
+            addExpenseRow('', 'cash', 'БОР (Товар)', 0);
+            
+            updateAll();
+            reportMessage.textContent = '✅ Рӯз ба анҷом расид';
+            setTimeout(() => reportMessage.textContent = '', 3000);
+            
+            updateMonthlyData();
+            updateHistory();
+        });
+
+        // Мубодила
+        shareBtn.addEventListener('click', function() {
+            updateAll();
+            
+            html2canvas(document.getElementById('summaryBlock'), {
+                scale: 2,
+                backgroundColor: '#0f2a3f',
+                logging: false
+            }).then(canvas => {
+                canvas.toBlob(blob => {
+                    if (!blob) return;
+                    
+                    const file = new File([blob], 'hisobot.png', { type: 'image/png' });
+                    
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            title: 'Ҳисоботи рӯзона',
+                            files: [file]
+                        }).catch(() => {
+                            downloadCanvas(canvas);
+                        });
+                    } else {
+                        downloadCanvas(canvas);
+                    }
+                });
+            });
+        });
+
+        function downloadCanvas(canvas) {
+            const link = document.createElement('a');
+            link.download = `hisobot_${currentShop}_${summaryDate.textContent}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Excel
+        excelBtn.addEventListener('click', function() {
+            const data = [
+                ['ҲИСОБОТИ РӮЗОНА'],
+                ['Мағоза:', currentShop],
+                ['Сана:', reportDate.value],
+                ['Администратор:', adminName.value],
+                [],
+                ['Нишондиҳанда', 'Маблағ (сӯм)'],
+                ['Фурӯши умумӣ', parseFloat(totalRevenue.value) || 0],
+                ['Аз ҷумла нақд', parseFloat(cashRevenue.value) || 0],
+                ['Аз ҷумла безнал', parseFloat(cashlessRevenue.value) || 0],
+                ['Возгардони нақд', parseFloat(returnCash.value) || 0],
+                ['Возгардони безнал', parseFloat(returnCashless.value) || 0]
+            ];
+
+            // Хароҷот
+            if (document.querySelectorAll('.expense-row').length > 0) {
+                data.push([]);
+                data.push(['ХАРОҶОТ:']);
+                document.querySelectorAll('.expense-row').forEach(row => {
+                    const desc = row.querySelector('.expense-desc').value || 'Хароҷот';
+                    const amt = parseFloat(row.querySelector('.expense-amount').value) || 0;
+                    if (amt > 0) {
+                        data.push([desc, amt]);
+                    }
+                });
+            }
+
+            // Якҷоя
+            data.push([]);
+            data.push(['НАҚД ДАР СЕЙФ', (parseFloat(summarySafeCash.textContent.replace(/[^\d]/g, '')) || 0)]);
+            data.push(['БЕЗНАЛ ДАР СЕЙФ', (parseFloat(summarySafeCashless.textContent.replace(/[^\d]/g, '')) || 0)]);
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, 'Ҳисобот');
+            XLSX.writeFile(wb, `hisobot_${currentShop}_${reportDate.value}.xlsx`);
+        });
+
+        // Маълумоти моҳона
+        function updateMonthlyData() {
+            if (!currentShop) return;
+            
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            
+            const monthNames = ['Январ', 'Феврал', 'Март', 'Апрел', 'Май', 'Июн', 'Июл', 'Август', 'Сентябр', 'Октябр', 'Ноябр', 'Декабр'];
+            currentMonthSpan.textContent = monthNames[month] + ' ' + year;
+            
+            const monthReports = reportsHistory.filter(report => {
+                const reportDate = new Date(report.date);
+                return report.shop === currentShop && 
+                       reportDate.getMonth() === month && 
+                       reportDate.getFullYear() === year;
+            }).sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            let totalSum = 0;
+            let cashSum = 0;
+            let cashlessSum = 0;
+            let expenseSum = 0;
+            
+            let categorySums = {};
+            expenseCategories.forEach(cat => categorySums[cat] = 0);
+            
+            let dailyRows = '';
+            
+            monthReports.forEach(report => {
+                totalSum += report.totalRevenue || 0;
+                cashSum += report.cashRevenue || 0;
+                cashlessSum += report.cashlessRevenue || 0;
+                
+                let expenseStr = '';
+                (report.expenses || []).forEach(exp => {
+                    expenseSum += exp.amt || 0;
+                    if (exp.category && categorySums.hasOwnProperty(exp.category)) {
+                        categorySums[exp.category] += exp.amt;
+                    }
+                    expenseStr += `${exp.desc}: ${exp.amt.toLocaleString('ru-RU')}₽ `;
+                });
+                
+                const date = report.date.split('-').reverse().slice(0,2).join('.');
+                dailyRows += `
+                    <div class="table-row">
+                        <div class="table-date">${date}</div>
+                        <div class="table-amount">${(report.totalRevenue || 0).toLocaleString('ru-RU')}</div>
+                        <div class="table-amount">${(report.cashRevenue || 0).toLocaleString('ru-RU')}</div>
+                        <div class="table-amount">${(report.cashlessRevenue || 0).toLocaleString('ru-RU')}</div>
+                        <div class="table-expenses">${expenseStr || '—'}</div>
+                    </div>
+                `;
+            });
+            
+            monthlyTotal.textContent = totalSum.toLocaleString('ru-RU') + ' ₽';
+            monthlyCash.textContent = cashSum.toLocaleString('ru-RU') + ' ₽';
+            monthlyCashless.textContent = cashlessSum.toLocaleString('ru-RU') + ' ₽';
+            monthlyExpense.textContent = expenseSum.toLocaleString('ru-RU') + ' ₽';
+            
+            if (expenseSum > 50000) {
+                monthlyExpense.classList.add('negative');
+            } else {
+                monthlyExpense.classList.remove('negative');
+            }
+            
+            dailyTable.innerHTML = dailyRows || '<div class="table-row" style="grid-column: 1/-1; text-align: center;">Ҳисобот нест</div>';
+            
+            updateChart(categorySums, expenseSum);
+            updateCategoriesTable(categorySums, expenseSum);
+        }
+
+        function updateChart(categorySums, totalExpense) {
+            const maxValue = Math.max(...Object.values(categorySums), 1);
+            let bars = '';
+            
+            expenseCategories.forEach(cat => {
+                const value = categorySums[cat] || 0;
+                const height = maxValue > 0 ? (value / maxValue * 100) : 0;
+                
+                bars += `
+                    <div class="bar-container">
+                        <div class="bar" style="height: ${height}px;"></div>
+                        <div class="bar-label">${cat.substring(0, 3)}</div>
+                    </div>
+                `;
+            });
+            
+            expenseChart.innerHTML = bars;
+        }
+
+        function updateCategoriesTable(categorySums, totalExpense) {
+            let rows = '';
+            
+            expenseCategories.forEach(cat => {
+                const amount = categorySums[cat] || 0;
+                const percent = totalExpense > 0 ? ((amount / totalExpense) * 100).toFixed(1) : 0;
+                
+                rows += `
+                    <div class="cat-table-row">
+                        <div class="category-name">${cat}</div>
+                        <div class="category-amount">${amount.toLocaleString('ru-RU')} ₽</div>
+                        <div class="category-percent">${percent}%</div>
+                    </div>
+                `;
+            });
+            
+            expenseCategoriesTable.innerHTML = rows;
+        }
+
+        prevMonthBtn.addEventListener('click', function() {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            updateMonthlyData();
+        });
+
+        nextMonthBtn.addEventListener('click', function() {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            updateMonthlyData();
+        });
+
+        exportMonthlyBtn.addEventListener('click', function() {
+            alert('📊 Экспорти моҳона барои ' + currentMonthSpan.textContent);
+            
+            const data = [
+                ['ҲИСОБОТИ МОҲОНА'],
+                ['Мағоза:', currentShop],
+                ['Моҳ:', currentMonthSpan.textContent],
+                [],
+                ['Нишондиҳанда', 'Маблағ (сӯм)'],
+                ['Фурӯши умумӣ', parseFloat(monthlyTotal.textContent) || 0],
+                ['Нақд', parseFloat(monthlyCash.textContent) || 0],
+                ['Безнал', parseFloat(monthlyCashless.textContent) || 0],
+                ['Хароҷот', parseFloat(monthlyExpense.textContent) || 0]
+            ];
+            
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, 'Моҳона');
+            XLSX.writeFile(wb, `monthly_${currentShop}_${currentMonthSpan.textContent}.xlsx`);
+        });
+
+        // Таърих
+        function updateHistory() {
+            const filterDate = document.getElementById('historyDateFilter').value;
+            const historyList = document.getElementById('historyList');
+            
+            let filtered = [...reportsHistory].filter(r => r.shop === currentShop);
+            
+            if (filterDate) {
+                filtered = filtered.filter(r => r.date === filterDate);
+            }
+            
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (filtered.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; padding: 20px;">Ҳисобот нест</div>';
+                return;
+            }
+            
+            let html = '';
+            filtered.forEach(report => {
+                const totalExpenses = (report.expenses || []).reduce((sum, exp) => sum + (exp.amt || 0), 0);
+                
+                html += `
+                    <div class="history-item">
+                        <div class="history-item-header">
+                            <span class="history-date">📅 ${report.date}</span>
+                            <span class="history-admin">👤 ${report.admin}</span>
+                        </div>
+                        <div class="history-stats">
+                            <div>💰 Фурӯш: <span class="history-total">${(report.totalRevenue || 0).toLocaleString('ru-RU')} ₽</span></div>
+                            <div>💵 Нақд: ${(report.cashRevenue || 0).toLocaleString('ru-RU')} ₽</div>
+                            <div>💳 Безнал: ${(report.cashlessRevenue || 0).toLocaleString('ru-RU')} ₽</div>
+                            <div>📉 Хароҷот: <span class="history-expenses">${totalExpenses.toLocaleString('ru-RU')} ₽</span></div>
+                        </div>
+                        <button class="history-delete" data-id="${report.id}">❌ Нест кардан</button>
+                    </div>
+                `;
+            });
+            
+            historyList.innerHTML = html;
+            
+            document.querySelectorAll('.history-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (confirm('Ҳисобот нест карда шавад?')) {
+                        const id = this.dataset.id;
+                        reportsHistory = reportsHistory.filter(r => r.id !== id);
+                        saveData();
+                        updateHistory();
+                    }
+                });
+            });
+        }
+
+        document.getElementById('historyDateFilter').addEventListener('change', updateHistory);
+
+        // Бозгашт
+        backToShopBtn.addEventListener('click', function() {
+            navTabs[0].click();
+        });
+
+        backFromMonthlyBtn.addEventListener('click', function() {
+            navTabs[0].click();
+        });
+
+        backFromHistoryBtn.addEventListener('click', function() {
+            navTabs[0].click();
+        });
+
+        updateAll();
+    })();
+</script>
+</body>
+</html>
