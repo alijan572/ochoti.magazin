@@ -2,7 +2,7 @@
 <html lang="tg">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Ҳисоботи рӯзона ва моҳона</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -24,23 +24,25 @@
         }
         
         .app-container {
-            max-width: 100%;
+            max-width: 440px;
             width: 100%;
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
-            border-radius: 24px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            border-radius: 32px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
             padding: 16px 12px;
+            transition: all 0.3s ease;
         }
 
+        /* Навигатсия */
         .nav-tabs {
             display: flex;
-            gap: 4px;
+            gap: 6px;
             margin-bottom: 20px;
             background: #f0f5ff;
             border-radius: 40px;
             padding: 4px;
-            flex-wrap: wrap;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
         }
         
         .nav-tab {
@@ -48,83 +50,153 @@
             text-align: center;
             padding: 10px 4px;
             border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.8rem;
+            font-weight: 700;
+            font-size: 0.85rem;
             color: #2d3c4b;
             cursor: pointer;
+            transition: all 0.3s ease;
             white-space: nowrap;
         }
         
         .nav-tab.active {
             background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
             color: white;
+            box-shadow: 0 5px 15px -3px #1e4b8a;
+            transform: scale(0.98);
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(30, 75, 138, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(30, 75, 138, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(30, 75, 138, 0); }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: slideUp 0.4s ease forwards;
+        }
+
         .shop-screen, .report-screen, .monthly-screen, .history-screen {
             display: none;
         }
         
         .shop-screen.active, .report-screen.active, .monthly-screen.active, .history-screen.active {
             display: block;
-            animation: slideUp 0.3s ease;
+            animation: slideUp 0.4s ease;
         }
 
         h2 {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            color: #1e4b8a;
+            background: linear-gradient(135deg, #1e4b8a, #0f3a6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 16px;
+            animation: slideUp 0.5s ease;
         }
         
         .section-title {
             font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 1px;
             color: #5a6f84;
             margin-bottom: 12px;
         }
 
+        /* Экран интихоби мағоза */
         .shop-grid {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin: 20px 0;
+            margin: 20px 0 16px;
         }
         
         .shop-card {
-            background: #f8faff;
+            background: linear-gradient(145deg, #ffffff, #f8faff);
             border: 2px solid #d9e2ef;
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 18px;
             color: #1f2a3f;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: 700;
             text-align: center;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .shop-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(30, 75, 138, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .shop-card:hover::before {
+            left: 100%;
+        }
+        
+        .shop-card:hover {
+            transform: translateY(-2px);
+            border-color: #1e4b8a;
+            box-shadow: 0 10px 25px rgba(30, 75, 138, 0.2);
         }
         
         .shop-card.selected {
             background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
             color: white;
             border-color: #1e4b8a;
+            box-shadow: 0 10px 25px rgba(30, 75, 138, 0.3);
+            animation: scaleIn 0.3s ease;
+        }
+        
+        .shop-card.selected::after {
+            content: '✓';
+            position: absolute;
+            right: 20px;
+            font-size: 1.5rem;
+            animation: scaleIn 0.3s ease;
         }
 
         .btn-primary {
             background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
             color: white;
             border: none;
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 14px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 700;
             width: 100%;
             cursor: pointer;
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -5px #1e4b8a;
+            margin-top: 8px;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.96);
+            box-shadow: 0 5px 10px -3px #1e4b8a;
         }
         
         .btn-primary:disabled {
@@ -136,52 +208,59 @@
             background: white;
             border: 2px solid #1e4b8a;
             color: #1e4b8a;
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 12px;
             font-size: 0.9rem;
             font-weight: 700;
             width: 100%;
             cursor: pointer;
+            transition: all 0.3s ease;
             margin-top: 8px;
         }
-
-        .btn-success {
-            background: #0d9488;
+        
+        .btn-secondary:active {
+            background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
             color: white;
-            border: none;
-            border-radius: 16px;
-            padding: 14px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            width: 100%;
-            cursor: pointer;
-            margin: 8px 0;
+            transform: scale(0.96);
         }
 
+        /* Экран ҳисобот */
         .header-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             padding-bottom: 12px;
-            border-bottom: 2px solid #e0e9f5;
+            border-bottom: 3px solid #e0e9f5;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
         
         .shop-name {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 800;
-            color: #1e4b8a;
+            background: linear-gradient(135deg, #1e4b8a, #0f3a6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slideUp 0.4s ease;
         }
         
         .date-input {
             background: #f5f9ff;
             border: 2px solid #d9e2ef;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 8px 12px;
             font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
             width: 140px;
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: #1e4b8a;
+            box-shadow: 0 0 0 3px rgba(30, 75, 138, 0.1);
+            transform: scale(1.02);
         }
 
         .admin-field {
@@ -193,16 +272,26 @@
             font-size: 0.8rem;
             font-weight: 600;
             color: #5a6f84;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         
         .admin-field input {
             width: 100%;
             background: #f5f9ff;
             border: 2px solid #d9e2ef;
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 14px;
             font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .admin-field input:focus {
+            outline: none;
+            border-color: #1e4b8a;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(30, 75, 138, 0.1);
+            transform: translateY(-2px);
         }
 
         .revenue-cards {
@@ -215,8 +304,16 @@
         .revenue-item {
             background: #f5f9ff;
             border: 2px solid #d9e2ef;
-            border-radius: 18px;
+            border-radius: 20px;
             padding: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .revenue-item:focus-within {
+            border-color: #1e4b8a;
+            background: white;
+            box-shadow: 0 10px 25px -10px #1e4b8a;
+            transform: translateY(-2px);
         }
         
         .revenue-item label {
@@ -232,29 +329,35 @@
             background: transparent;
             border: none;
             color: #0a1a2a;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 700;
             outline: none;
         }
+        
+        .revenue-item input[readonly] {
+            color: #1e4b8a;
+        }
 
+        /* Возврат */
         .return-section {
             background: #fff4e5;
             border: 2px solid #ffd79c;
-            border-radius: 18px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 14px;
             margin-bottom: 20px;
+            animation: slideUp 0.5s ease;
         }
         
         .return-title {
             font-size: 0.85rem;
             font-weight: 700;
             color: #b45309;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         
         .return-grid {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
         
         .return-item {
@@ -275,15 +378,96 @@
             border: 2px solid #ffd79c;
             border-radius: 12px;
             padding: 10px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .return-item input:focus {
+            outline: none;
+            border-color: #b45309;
+            box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.1);
+            transform: scale(1.02);
+        }
+
+        /* Фото */
+        .photo-section {
+            background: #e8f0fe;
+            border: 2px solid #1e4b8a;
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 20px;
+            animation: slideUp 0.5s ease;
+        }
+        
+        .photo-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1e4b8a;
+            margin-bottom: 10px;
+        }
+        
+        .photo-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .photo-btn {
+            flex: 1;
+            background: white;
+            border: 2px solid #1e4b8a;
+            border-radius: 14px;
+            padding: 10px;
+            color: #1e4b8a;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .photo-btn:hover {
+            background: #1e4b8a;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .photo-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .photo-preview {
+            width: 100%;
+            max-height: 140px;
+            object-fit: contain;
+            border-radius: 12px;
+            border: 2px solid #d9e2ef;
+            background: white;
+            margin-top: 8px;
+            display: none;
+            animation: scaleIn 0.3s ease;
+        }
+        
+        .photo-preview.show {
+            display: block;
+        }
+        
+        .photo-info {
+            font-size: 0.75rem;
+            color: #5a6f84;
+            margin-top: 5px;
+            text-align: center;
         }
 
         .safe-section {
-            background: #f5f9ff;
+            background: linear-gradient(145deg, #f5f9ff, #e8f0fe);
             border: 2px solid #d9e2ef;
-            border-radius: 20px;
+            border-radius: 24px;
             padding: 16px;
             margin-bottom: 20px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+            animation: slideUp 0.5s ease;
         }
         
         .safe-title {
@@ -312,29 +496,6 @@
             color: #1e4b8a;
         }
 
-        .progress-bar {
-            background: #e0e9f5;
-            border-radius: 20px;
-            height: 8px;
-            margin: 15px 0;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            background: linear-gradient(90deg, #1e4b8a, #3b7ab6);
-            height: 100%;
-            width: 0%;
-            border-radius: 20px;
-        }
-        
-        .progress-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: #5a6f84;
-            margin-bottom: 5px;
-        }
-
         .expenses-section {
             margin-bottom: 20px;
         }
@@ -347,7 +508,7 @@
         }
         
         .btn-add {
-            background: #1e4b8a;
+            background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
             border: none;
             border-radius: 30px;
             padding: 8px 16px;
@@ -355,65 +516,132 @@
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px -3px #1e4b8a;
+        }
+        
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -5px #1e4b8a;
+        }
+        
+        .btn-add:active {
+            transform: scale(0.95);
         }
         
         .expense-row {
             background: white;
             border: 2px solid #d9e2ef;
-            border-radius: 20px;
-            padding: 14px;
+            border-radius: 22px;
+            padding: 16px;
             margin-bottom: 12px;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
         }
         
         .expense-desc {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 2px solid #d9e2ef;
-            border-radius: 12px;
-            margin-bottom: 8px;
+            border-radius: 14px;
+            margin-bottom: 10px;
             font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .expense-desc:focus {
+            outline: none;
+            border-color: #1e4b8a;
+            transform: translateY(-2px);
         }
         
         .expense-type-row {
             display: flex;
             gap: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         
         .expense-type, .expense-category {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: 2px solid #d9e2ef;
-            border-radius: 12px;
-            font-size: 0.85rem;
+            border-radius: 14px;
+            background: white;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .expense-type:focus, .expense-category:focus {
+            outline: none;
+            border-color: #1e4b8a;
         }
         
         .expense-amount {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 2px solid #d9e2ef;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .expense-amount:focus {
+            outline: none;
+            border-color: #1e4b8a;
+            transform: translateY(-2px);
         }
         
         .remove-btn {
             background: #fee2e2;
             border: 2px solid #fecaca;
-            border-radius: 12px;
-            padding: 10px;
+            border-radius: 14px;
+            padding: 12px;
             color: #b91c1c;
             width: 100%;
             cursor: pointer;
             font-weight: 600;
+            transition: all 0.3s ease;
             font-size: 0.85rem;
+        }
+        
+        .remove-btn:hover {
+            background: #fecaca;
+            border-color: #ef4444;
+            transform: translateY(-2px);
+        }
+        
+        .remove-btn:active {
+            transform: scale(0.95);
         }
 
         .summary-block {
-            background: linear-gradient(145deg, #0f2a3f, #0a1e2f);
-            border-radius: 24px;
+            background: #0f2a3f; /* Сплошной цвет вместо градиента для четкости скриншота */
+            border-radius: 28px;
             padding: 20px;
             margin: 20px 0;
+            box-shadow: 0 25px 40px -12px #0a1e2f;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        /* Анимация пульсации для экрана (не влияет на скриншот) */
+        .summary-block.pulse-animation {
+            animation: pulse 4s infinite;
+        }
+        
+        .summary-block.pulse-animation::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(30,75,138,0.2) 0%, transparent 70%);
+            animation: pulse 4s infinite;
+            pointer-events: none;
         }
         
         .summary-header {
@@ -423,7 +651,9 @@
             padding-bottom: 12px;
             border-bottom: 2px solid rgba(255,255,255,0.1);
             color: rgba(255,255,255,0.7);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            position: relative;
+            z-index: 1;
             flex-wrap: wrap;
             gap: 5px;
         }
@@ -438,18 +668,21 @@
             flex-direction: column;
             gap: 10px;
             margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
         }
         
         .summary-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 5px 0;
+            padding: 6px 0;
             border-bottom: 1px dashed rgba(255,255,255,0.1);
         }
         
         .summary-label {
             color: rgba(255,255,255,0.8);
+            font-weight: 500;
             font-size: 0.85rem;
         }
         
@@ -464,6 +697,8 @@
             border-radius: 16px;
             padding: 14px;
             margin: 14px 0;
+            position: relative;
+            z-index: 1;
         }
         
         .expenses-summary-title {
@@ -479,23 +714,34 @@
             padding: 6px 0;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             color: white;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+        }
+        
+        .expense-summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .expense-summary-amount {
+            color: #fbbf24;
+            font-weight: 600;
         }
         
         .safe-summary {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             margin-top: 14px;
             padding-top: 14px;
             border-top: 2px solid rgba(255,255,255,0.1);
+            position: relative;
+            z-index: 1;
         }
         
         .safe-summary-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .safe-summary-item .label {
@@ -508,13 +754,14 @@
             color: #fbbf24;
         }
 
+        /* Экран моҳона */
         .monthly-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
         
         .month-selector {
@@ -526,14 +773,27 @@
         .month-btn {
             background: #f0f5ff;
             border: 2px solid #d9e2ef;
-            border-radius: 30px;
+            border-radius: 40px;
             width: 36px;
             height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            font-size: 1.1rem;
             cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .month-btn:hover {
+            background: #1e4b8a;
+            color: white;
+            border-color: #1e4b8a;
+            transform: scale(1.05);
+        }
+        
+        .month-btn:active {
+            transform: scale(0.95);
         }
         
         .current-month {
@@ -550,10 +810,18 @@
         }
         
         .stat-card {
-            background: #f5f9ff;
+            background: linear-gradient(145deg, #f5f9ff, #e8f0fe);
             border: 2px solid #d9e2ef;
-            border-radius: 18px;
-            padding: 14px;
+            border-radius: 20px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            animation: slideUp 0.4s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: #1e4b8a;
+            box-shadow: 0 15px 25px -10px #1e4b8a;
         }
         
         .stat-label {
@@ -564,60 +832,86 @@
         }
         
         .stat-value {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: #1e4b8a;
-            word-break: break-word;
         }
 
+        /* Таблицаи рӯзона */
         .daily-table {
             background: white;
             border: 2px solid #d9e2ef;
-            border-radius: 20px;
+            border-radius: 24px;
             overflow-x: auto;
             margin-bottom: 20px;
+            box-shadow: 0 10px 25px -10px rgba(0,0,0,0.1);
+            animation: slideUp 0.5s ease;
         }
         
         .table-header {
             display: grid;
-            grid-template-columns: 60px 1fr 1fr 1fr 1.2fr;
-            background: #1e4b8a;
+            grid-template-columns: 70px 1fr 1fr 1fr 1.3fr;
+            background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
             color: white;
             padding: 12px 8px;
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-align: center;
-            min-width: 400px;
+            min-width: 420px;
         }
         
         .table-row {
             display: grid;
-            grid-template-columns: 60px 1fr 1fr 1fr 1.2fr;
+            grid-template-columns: 70px 1fr 1fr 1fr 1.3fr;
             padding: 10px 8px;
             border-bottom: 1px solid #e0e9f5;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             text-align: center;
-            min-width: 400px;
+            align-items: center;
+            min-width: 420px;
+            transition: all 0.2s ease;
+        }
+        
+        .table-row:hover {
+            background: #f5f9ff;
+            transform: translateX(2px);
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
         }
         
         .table-date {
             font-weight: 700;
             color: #1e4b8a;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .table-date:hover {
+            text-decoration: underline;
+            transform: scale(1.05);
+        }
+        
+        .table-amount {
+            font-weight: 600;
+            color: #0f2a3f;
         }
         
         .table-expenses {
             font-size: 0.7rem;
             color: #b45309;
             text-align: left;
-            word-break: break-word;
         }
-
+        
         .chart-container {
-            background: white;
+            background: linear-gradient(145deg, #ffffff, #f5f9ff);
             border: 2px solid #d9e2ef;
-            border-radius: 20px;
-            padding: 16px;
+            border-radius: 24px;
+            padding: 18px;
             margin-bottom: 20px;
+            box-shadow: 0 10px 25px -10px rgba(0,0,0,0.1);
+            animation: slideUp 0.6s ease;
         }
         
         .chart-title {
@@ -636,52 +930,91 @@
         }
         
         .bar-container {
-            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
+            flex: 1;
         }
         
         .bar {
             width: 100%;
             background: linear-gradient(to top, #1e4b8a, #3b7ab6);
             border-radius: 8px 8px 0 0;
+            transition: height 0.3s ease;
+            box-shadow: 0 -5px 15px rgba(30,75,138,0.3);
             min-height: 2px;
         }
         
         .bar-label {
             margin-top: 5px;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             font-weight: 600;
             color: #5a6f84;
         }
-
+        
         .expenses-table {
             background: white;
             border: 2px solid #d9e2ef;
-            border-radius: 20px;
+            border-radius: 24px;
             overflow: hidden;
             margin-bottom: 20px;
+            box-shadow: 0 10px 25px -10px rgba(0,0,0,0.1);
+            animation: slideUp 0.7s ease;
         }
         
         .cat-table-header {
             display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr;
-            background: #1e4b8a;
+            grid-template-columns: 2fr 1fr 1fr;
+            background: linear-gradient(145deg, #1e4b8a, #0f3a6b);
             color: white;
-            padding: 12px;
+            padding: 14px 12px;
             font-weight: 700;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
         }
         
         .cat-table-row {
             display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr 1fr;
             padding: 12px;
             border-bottom: 1px solid #e0e9f5;
             font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        
+        .cat-table-row:hover {
+            background: #f5f9ff;
+            transform: translateX(2px);
+        }
+        
+        .btn-export {
+            background: linear-gradient(145deg, #0d9488, #0f766e);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 15px 25px -8px #0d9488;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 30px -10px #0d9488;
+        }
+        
+        .btn-export:active {
+            transform: scale(0.97);
         }
 
+        /* Экран таърих */
         .history-filters {
             display: flex;
             gap: 8px;
@@ -690,14 +1023,21 @@
         
         .history-filters input {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: 2px solid #d9e2ef;
-            border-radius: 12px;
+            border-radius: 16px;
             font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .history-filters input:focus {
+            outline: none;
+            border-color: #1e4b8a;
+            box-shadow: 0 0 0 3px rgba(30, 75, 138, 0.1);
         }
         
         .history-list {
-            max-height: 400px;
+            max-height: 450px;
             overflow-y: auto;
             margin-bottom: 16px;
         }
@@ -705,9 +1045,17 @@
         .history-item {
             background: white;
             border: 2px solid #d9e2ef;
-            border-radius: 16px;
-            padding: 12px;
+            border-radius: 20px;
+            padding: 14px;
             margin-bottom: 10px;
+            transition: all 0.3s ease;
+            animation: slideUp 0.4s ease;
+        }
+        
+        .history-item:hover {
+            border-color: #1e4b8a;
+            transform: translateX(3px);
+            box-shadow: 0 10px 20px -10px #1e4b8a;
         }
         
         .history-item-header {
@@ -737,36 +1085,117 @@
             font-weight: 700;
         }
         
+        .history-expenses {
+            color: #b45309;
+        }
+        
+        .history-photo {
+            max-width: 100%;
+            max-height: 60px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .history-photo:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
         .history-delete {
             background: #fee2e2;
             border: 2px solid #fecaca;
-            border-radius: 10px;
-            padding: 6px;
+            border-radius: 12px;
+            padding: 8px;
             color: #b91c1c;
             cursor: pointer;
             font-size: 0.8rem;
+            font-weight: 600;
             width: 100%;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .history-delete:hover {
+            background: #fecaca;
+            border-color: #ef4444;
+            transform: translateY(-2px);
+        }
+        
+        .history-delete:active {
+            transform: scale(0.97);
         }
 
         .message {
             text-align: center;
             color: #0d9488;
-            margin-top: 15px;
+            margin-top: 12px;
             font-size: 0.85rem;
+            font-weight: 600;
             padding: 10px;
             background: #f0fdf4;
-            border-radius: 12px;
+            border-radius: 14px;
+            border: 2px solid #86efac;
+            animation: scaleIn 0.3s ease;
         }
 
-        /* Для маленьких экранов */
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal img {
+            max-width: 95%;
+            max-height: 95%;
+            border-radius: 16px;
+            animation: scaleIn 0.3s ease;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            transform: scale(1.1);
+            color: #fbbf24;
+        }
+
+        /* Адаптация для очень маленьких экранов */
         @media (max-width: 360px) {
             .nav-tab {
-                font-size: 0.7rem;
+                font-size: 0.75rem;
                 padding: 8px 2px;
             }
             
             .shop-name {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
             }
             
             .summary-amount {
@@ -774,7 +1203,12 @@
             }
             
             .stat-value {
-                font-size: 1rem;
+                font-size: 1.1rem;
+            }
+            
+            .btn-primary, .btn-secondary {
+                padding: 12px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -787,6 +1221,12 @@
         <div class="nav-tab" data-tab="daily">Рӯзона</div>
         <div class="nav-tab" data-tab="monthly">Моҳона</div>
         <div class="nav-tab" data-tab="history">Таърих</div>
+    </div>
+
+    <!-- Модальное окно для фото -->
+    <div class="modal" id="photoModal">
+        <span class="modal-close" id="closeModal">&times;</span>
+        <img id="modalImage" src="" alt="Чек">
     </div>
 
     <!-- Экрани интихоби мағоза -->
@@ -807,28 +1247,31 @@
             <input type="date" id="reportDate" class="date-input" value="2026-03-16">
         </div>
 
-        <!-- Прогресс-бари рӯз -->
-        <div class="progress-stats">
-            <span>Оғози рӯз: 09:00</span>
-            <span id="timeProgress">0%</span>
-        </div>
-        <div class="progress-bar">
-            <div class="progress-fill" id="dayProgress" style="width: 0%;"></div>
-        </div>
-
         <div class="admin-field">
             <label>АДМИНИСТРАТОР</label>
             <input type="text" id="adminName" placeholder="Ному насаб" value="Аҳмадов">
         </div>
 
+        <!-- Прикрепление фото чека -->
+        <div class="photo-section">
+            <div class="photo-title">ЧЕК (фото)</div>
+            <div class="photo-buttons">
+                <button class="photo-btn" id="cameraBtn">📸 Аккос</button>
+                <button class="photo-btn" id="galleryBtn">🖼 Галерея</button>
+            </div>
+            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+            <img id="photoPreview" class="photo-preview" src="#" alt="Чек">
+            <div class="photo-info" id="photoInfo">Чек тасвир надорад</div>
+        </div>
+
         <div class="revenue-cards">
             <div class="revenue-item">
                 <label>ЧЕКИ УМУМӢ</label>
-                <input type="number" id="totalRevenue" value="0" placeholder="0" min="0">
+                <input type="number" id="totalRevenue" value="0" placeholder="0">
             </div>
             <div class="revenue-item">
                 <label>БЕЗНАЛ</label>
-                <input type="number" id="cashlessRevenue" value="0" placeholder="0" min="0">
+                <input type="number" id="cashlessRevenue" value="0" placeholder="0">
             </div>
             <div class="revenue-item">
                 <label>НАҚДИ ИМРӮЗА</label>
@@ -838,15 +1281,15 @@
 
         <!-- Возврат -->
         <div class="return-section">
-            <div class="return-title">ВОЗГАРДОНИ МАБЛАҒ (RETURN)</div>
+            <div class="return-title">ВОЗГАРДОНИ МАБЛАҒ</div>
             <div class="return-grid">
                 <div class="return-item">
                     <label>НАҚД</label>
-                    <input type="number" id="returnCash" value="0" placeholder="0" min="0">
+                    <input type="number" id="returnCash" value="0" placeholder="0">
                 </div>
                 <div class="return-item">
                     <label>БЕЗНАЛ</label>
-                    <input type="number" id="returnCashless" value="0" placeholder="0" min="0">
+                    <input type="number" id="returnCashless" value="0" placeholder="0">
                 </div>
             </div>
         </div>
@@ -921,10 +1364,9 @@
             </div>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
             <button class="btn-primary" id="shareBtn">МУБОДИЛАИ ҲИСОБОТ</button>
             <button class="btn-primary" id="finishDayBtn">БА АНҶОМ РАСОНИДАНИ РӮЗ</button>
-            <button class="btn-success" id="excelBtn">EXCEL</button>
             <button class="btn-secondary" id="backToShopBtn">БА ИНТИХОБИ МАҒОЗА</button>
         </div>
         <div id="reportMessage" class="message"></div>
@@ -1005,9 +1447,9 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
     (function() {
+        // Маълумотҳои ибтидоӣ
         let shopData = {
             'F-1': { cash: 21880, cashless: 480215 },
             'F-5': { cash: 15200, cashless: 310500 },
@@ -1017,6 +1459,7 @@
         let reportsHistory = [];
         let currentShop = null;
         let currentMonth = new Date();
+        let currentPhotoData = null;
 
         const expenseCategories = [
             'БОР (Товар)',
@@ -1027,6 +1470,7 @@
             'ДИГАР'
         ];
 
+        // Боргирии маълумот
         function loadData() {
             const saved = localStorage.getItem('shopReports');
             if (saved) {
@@ -1038,6 +1482,7 @@
             }
         }
         
+        // Нигоҳдории маълумот
         function saveData() {
             localStorage.setItem('shopReports', JSON.stringify({
                 shopData: shopData,
@@ -1047,11 +1492,15 @@
         
         loadData();
 
+        // Элементҳо
         const navTabs = document.querySelectorAll('.nav-tab');
         const shopScreen = document.getElementById('shopScreen');
         const reportScreen = document.getElementById('reportScreen');
         const monthlyScreen = document.getElementById('monthlyScreen');
         const historyScreen = document.getElementById('historyScreen');
+        const photoModal = document.getElementById('photoModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModal = document.getElementById('closeModal');
         
         navTabs.forEach(tab => {
             tab.addEventListener('click', function() {
@@ -1067,7 +1516,7 @@
                     case 'daily':
                         if (currentShop) {
                             reportScreen.classList.add('active');
-                            updateProgressBar();
+                            loadReportByDate(reportDate.value);
                         } else {
                             alert('Аввал мағозаро интихоб кунед');
                             navTabs[0].click();
@@ -1131,7 +1580,6 @@
         const addExpenseBtn = document.getElementById('addExpenseBtn');
         const shareBtn = document.getElementById('shareBtn');
         const finishBtn = document.getElementById('finishDayBtn');
-        const excelBtn = document.getElementById('excelBtn');
         const reportMessage = document.getElementById('reportMessage');
 
         const prevMonthBtn = document.getElementById('prevMonth');
@@ -1146,30 +1594,82 @@
         const dailyTable = document.getElementById('dailyTable');
         const exportMonthlyBtn = document.getElementById('exportMonthlyBtn');
 
-        const dayProgress = document.getElementById('dayProgress');
-        const timeProgress = document.getElementById('timeProgress');
+        // Элементы для фото
+        const cameraBtn = document.getElementById('cameraBtn');
+        const galleryBtn = document.getElementById('galleryBtn');
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoInfo = document.getElementById('photoInfo');
 
-        function updateProgressBar() {
-            const now = new Date();
-            const start = new Date(now);
-            start.setHours(9, 0, 0);
-            const end = new Date(now);
-            end.setHours(23, 0, 0);
+        // Функция для загрузки данных по дате
+        function loadReportByDate(date) {
+            if (!currentShop) return;
             
-            if (now < start) {
-                dayProgress.style.width = '0%';
-                timeProgress.textContent = '0%';
-            } else if (now > end) {
-                dayProgress.style.width = '100%';
-                timeProgress.textContent = '100%';
+            const savedReport = reportsHistory.find(r => r.shop === currentShop && r.date === date);
+            
+            if (savedReport) {
+                adminName.value = savedReport.admin || 'Админ';
+                totalRevenue.value = savedReport.totalRevenue || 0;
+                cashlessRevenue.value = savedReport.cashlessRevenue || 0;
+                returnCash.value = savedReport.returnCash || 0;
+                returnCashless.value = savedReport.returnCashless || 0;
+                
+                expensesContainer.innerHTML = '';
+                if (savedReport.expenses && savedReport.expenses.length > 0) {
+                    savedReport.expenses.forEach(exp => {
+                        addExpenseRow(exp.desc, exp.type, exp.category, exp.amt);
+                    });
+                } else {
+                    addExpenseRow('', 'cash', 'БОР (Товар)', 0);
+                }
+                
+                if (savedReport.photoData) {
+                    photoPreview.src = savedReport.photoData;
+                    photoPreview.classList.add('show');
+                    photoInfo.textContent = 'Чек тасвир дорад ✓';
+                    currentPhotoData = savedReport.photoData;
+                } else {
+                    photoPreview.classList.remove('show');
+                    photoInfo.textContent = 'Чек тасвир надорад';
+                    currentPhotoData = null;
+                }
+                
+                const nextDay = new Date(date);
+                nextDay.setDate(nextDay.getDate() + 1);
+                const nextDayStr = nextDay.toISOString().split('T')[0];
+                const nextDayReport = reportsHistory.find(r => r.shop === currentShop && r.date === nextDayStr);
+                
+                if (nextDayReport) {
+                    safeCash.textContent = (nextDayReport.safeCash || 0).toLocaleString('ru-RU');
+                    safeCashless.textContent = (nextDayReport.safeCashless || 0).toLocaleString('ru-RU');
+                } else {
+                    safeCash.textContent = (savedReport.safeCash || shopData[currentShop]?.cash || 0).toLocaleString('ru-RU');
+                    safeCashless.textContent = (savedReport.safeCashless || shopData[currentShop]?.cashless || 0).toLocaleString('ru-RU');
+                }
             } else {
-                const percent = ((now - start) / (end - start) * 100).toFixed(0);
-                dayProgress.style.width = percent + '%';
-                timeProgress.textContent = percent + '%';
+                adminName.value = 'Аҳмадов';
+                totalRevenue.value = 0;
+                cashlessRevenue.value = 0;
+                returnCash.value = 0;
+                returnCashless.value = 0;
+                expensesContainer.innerHTML = '';
+                addExpenseRow('', 'cash', 'БОР (Товар)', 0);
+                
+                photoPreview.classList.remove('show');
+                photoInfo.textContent = 'Чек тасвир надорад';
+                currentPhotoData = null;
+                
+                const data = shopData[currentShop] || { cash: 0, cashless: 0 };
+                safeCash.textContent = data.cash.toLocaleString('ru-RU');
+                safeCashless.textContent = data.cashless.toLocaleString('ru-RU');
             }
+            
+            updateAll();
         }
-        
-        setInterval(updateProgressBar, 60000);
+
+        reportDate.addEventListener('change', function() {
+            loadReportByDate(this.value);
+        });
 
         shopCards.forEach(card => {
             card.addEventListener('click', function() {
@@ -1187,22 +1687,7 @@
             summaryShop.textContent = currentShop;
             monthlyShopName.textContent = currentShop;
             
-            const data = shopData[currentShop];
-            safeCash.textContent = data.cash.toLocaleString('ru-RU');
-            safeCashless.textContent = data.cashless.toLocaleString('ru-RU');
-            
-            totalRevenue.value = 0;
-            cashlessRevenue.value = 0;
-            cashRevenue.value = '0';
-            returnCash.value = 0;
-            returnCashless.value = 0;
-            adminName.value = 'Аҳмадов';
-            
-            expensesContainer.innerHTML = '';
-            addExpenseRow('', 'cash', 'БОР (Товар)', 0);
-            
-            updateDate();
-            updateAll();
+            loadReportByDate(reportDate.value);
             
             navTabs[1].click();
         });
@@ -1213,7 +1698,6 @@
                 summaryDate.textContent = `${d[2]}.${d[1]}.${d[0]}`;
             }
         }
-        reportDate.addEventListener('change', updateDate);
 
         function addExpenseRow(desc = '', type = 'cash', category = 'БОР (Товар)', amount = 0) {
             const row = document.createElement('div');
@@ -1235,7 +1719,7 @@
                         ${categoryOptions}
                     </select>
                 </div>
-                <input type="number" class="expense-amount" placeholder="Маблағ" value="${amount}" min="0" step="10">
+                <input type="number" class="expense-amount" placeholder="Маблағ" value="${amount}" step="10">
                 <button class="remove-btn">НЕСТ КАРДАН</button>
             `;
             
@@ -1258,13 +1742,13 @@
         });
 
         function updateAll() {
-            const total = Math.max(0, parseFloat(totalRevenue.value) || 0);
-            const cashless = Math.max(0, parseFloat(cashlessRevenue.value) || 0);
+            const total = parseFloat(totalRevenue.value) || 0;
+            const cashless = parseFloat(cashlessRevenue.value) || 0;
             const cash = Math.max(0, total - cashless);
             cashRevenue.value = cash;
             
-            const returnAmtCash = Math.max(0, parseFloat(returnCash.value) || 0);
-            const returnAmtCashless = Math.max(0, parseFloat(returnCashless.value) || 0);
+            const returnAmtCash = parseFloat(returnCash.value) || 0;
+            const returnAmtCashless = parseFloat(returnCashless.value) || 0;
             
             const cashStart = parseFloat(safeCash.textContent.replace(/\s/g, '')) || 0;
             const cashlessStart = parseFloat(safeCashless.textContent.replace(/\s/g, '')) || 0;
@@ -1277,7 +1761,7 @@
                 const desc = row.querySelector('.expense-desc').value.trim() || 'хароҷот';
                 const type = row.querySelector('.expense-type').value;
                 const category = row.querySelector('.expense-category').value;
-                const amt = Math.max(0, parseFloat(row.querySelector('.expense-amount').value) || 0);
+                const amt = parseFloat(row.querySelector('.expense-amount').value) || 0;
                 
                 if (amt > 0) {
                     if (type === 'cash') expenseCash += amt;
@@ -1306,7 +1790,7 @@
                 expenseItems.forEach(item => {
                     html += `
                         <div class="expense-summary-item">
-                            <span>${item.desc}</span>
+                            <span>${item.desc} (${item.type === 'cash' ? 'НАҚД' : 'БЕЗНАЛ'})</span>
                             <span class="expense-summary-amount">${item.amt.toLocaleString('ru-RU')} ₽</span>
                         </div>
                     `;
@@ -1315,6 +1799,30 @@
             }
         }
 
+        cameraBtn.addEventListener('click', function() {
+            photoInput.setAttribute('capture', 'environment');
+            photoInput.click();
+        });
+
+        galleryBtn.addEventListener('click', function() {
+            photoInput.removeAttribute('capture');
+            photoInput.click();
+        });
+
+        photoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreview.src = e.target.result;
+                    photoPreview.classList.add('show');
+                    photoInfo.textContent = 'Чек тасвир дорад ✓';
+                    currentPhotoData = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         totalRevenue.addEventListener('input', updateAll);
         cashlessRevenue.addEventListener('input', updateAll);
         returnCash.addEventListener('input', updateAll);
@@ -1322,12 +1830,12 @@
         adminName.addEventListener('input', updateAll);
 
         finishBtn.addEventListener('click', function() {
-            const total = Math.max(0, parseFloat(totalRevenue.value) || 0);
-            const cashless = Math.max(0, parseFloat(cashlessRevenue.value) || 0);
+            const total = parseFloat(totalRevenue.value) || 0;
+            const cashless = parseFloat(cashlessRevenue.value) || 0;
             const cash = Math.max(0, total - cashless);
             
-            const returnAmtCash = Math.max(0, parseFloat(returnCash.value) || 0);
-            const returnAmtCashless = Math.max(0, parseFloat(returnCashless.value) || 0);
+            const returnAmtCash = parseFloat(returnCash.value) || 0;
+            const returnAmtCashless = parseFloat(returnCashless.value) || 0;
             
             const cashStart = parseFloat(safeCash.textContent.replace(/\s/g, '')) || 0;
             const cashlessStart = parseFloat(safeCashless.textContent.replace(/\s/g, '')) || 0;
@@ -1340,7 +1848,7 @@
                 const desc = row.querySelector('.expense-desc').value.trim() || 'хароҷот';
                 const type = row.querySelector('.expense-type').value;
                 const category = row.querySelector('.expense-category').value;
-                const amt = Math.max(0, parseFloat(row.querySelector('.expense-amount').value) || 0);
+                const amt = parseFloat(row.querySelector('.expense-amount').value) || 0;
                 
                 if (amt > 0) {
                     if (type === 'cash') expenseCash += amt;
@@ -1351,6 +1859,8 @@
             
             const finalCash = Math.max(0, cashStart + cash - expenseCash - returnAmtCash);
             const finalCashless = Math.max(0, cashlessStart + cashless - expenseCashless - returnAmtCashless);
+            
+            reportsHistory = reportsHistory.filter(r => !(r.shop === currentShop && r.date === reportDate.value));
             
             const report = {
                 id: Date.now().toString(),
@@ -1365,55 +1875,88 @@
                 expenses: expenses,
                 safeCash: finalCash,
                 safeCashless: finalCashless,
+                photoData: currentPhotoData,
                 createdAt: new Date().toISOString()
             };
             
             reportsHistory.push(report);
             
-            if (currentShop) {
-                shopData[currentShop] = {
-                    cash: finalCash,
-                    cashless: finalCashless
-                };
-            }
+            shopData[currentShop] = {
+                cash: finalCash,
+                cashless: finalCashless
+            };
             
             saveData();
             
-            safeCash.textContent = finalCash.toLocaleString('ru-RU');
-            safeCashless.textContent = finalCashless.toLocaleString('ru-RU');
-            
-            totalRevenue.value = 0;
-            cashlessRevenue.value = 0;
-            cashRevenue.value = '0';
-            returnCash.value = 0;
-            returnCashless.value = 0;
-            expensesContainer.innerHTML = '';
-            addExpenseRow('', 'cash', 'БОР (Товар)', 0);
-            
-            updateAll();
-            reportMessage.textContent = 'Рӯз ба анҷом расид';
+            reportMessage.textContent = '✅ Рӯз ба анҷом расид';
             setTimeout(() => reportMessage.textContent = '', 3000);
             
             updateMonthlyData();
             updateHistory();
         });
 
+        // ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ МУБОДИЛА
         shareBtn.addEventListener('click', function() {
             updateAll();
             
-            html2canvas(document.getElementById('summaryBlock'), {
+            // Создаем временную копию блока без анимаций и эффектов
+            const originalBlock = document.getElementById('summaryBlock');
+            const cloneBlock = originalBlock.cloneNode(true);
+            
+            // Удаляем все анимационные эффекты из клона
+            cloneBlock.style.animation = 'none';
+            cloneBlock.style.position = 'fixed';
+            cloneBlock.style.top = '-9999px';
+            cloneBlock.style.left = '-9999px';
+            cloneBlock.style.zIndex = '-1';
+            
+            // Убираем псевдоэлементы (::after)
+            const style = document.createElement('style');
+            style.textContent = `
+                .no-after::after {
+                    display: none !important;
+                }
+                .no-after {
+                    background: #0f2a3f !important;
+                    background-image: none !important;
+                }
+            `;
+            document.head.appendChild(style);
+            cloneBlock.classList.add('no-after');
+            
+            // Убираем градиентный фон
+            cloneBlock.style.background = '#0f2a3f';
+            cloneBlock.style.backgroundImage = 'none';
+            
+            document.body.appendChild(cloneBlock);
+            
+            // Делаем скриншот клона
+            html2canvas(cloneBlock, {
                 scale: 2,
                 backgroundColor: '#0f2a3f',
-                logging: false
+                logging: false,
+                allowTaint: false,
+                useCORS: true,
+                onclone: function(clonedDoc) {
+                    // Дополнительно убираем все псевдоэлементы в клоне
+                    const clonedElement = clonedDoc.querySelector('.no-after');
+                    if (clonedElement) {
+                        clonedElement.style.background = '#0f2a3f';
+                    }
+                }
             }).then(canvas => {
+                // Удаляем клон и стили
+                document.body.removeChild(cloneBlock);
+                document.head.removeChild(style);
+                
                 canvas.toBlob(blob => {
                     if (!blob) return;
                     
-                    const file = new File([blob], 'hisobot.png', { type: 'image/png' });
+                    const file = new File([blob], `hisobot_${currentShop}_${summaryDate.textContent}.png`, { type: 'image/png' });
                     
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                         navigator.share({
-                            title: 'Ҳисоботи рӯзона',
+                            title: `Ҳисоботи ${currentShop} барои ${summaryDate.textContent}`,
                             files: [file]
                         }).catch(() => {
                             downloadCanvas(canvas);
@@ -1431,43 +1974,6 @@
             link.href = canvas.toDataURL('image/png');
             link.click();
         }
-
-        excelBtn.addEventListener('click', function() {
-            const data = [
-                ['ҲИСОБОТИ РӮЗОНА'],
-                ['Мағоза:', currentShop],
-                ['Сана:', reportDate.value],
-                ['Администратор:', adminName.value],
-                [],
-                ['Нишондиҳанда', 'Маблағ (сӯм)'],
-                ['Фурӯши умумӣ', parseFloat(totalRevenue.value) || 0],
-                ['Аз ҷумла нақд', parseFloat(cashRevenue.value) || 0],
-                ['Аз ҷумла безнал', parseFloat(cashlessRevenue.value) || 0],
-                ['Возгардони нақд', parseFloat(returnCash.value) || 0],
-                ['Возгардони безнал', parseFloat(returnCashless.value) || 0]
-            ];
-
-            if (document.querySelectorAll('.expense-row').length > 0) {
-                data.push([]);
-                data.push(['ХАРОҶОТ:']);
-                document.querySelectorAll('.expense-row').forEach(row => {
-                    const desc = row.querySelector('.expense-desc').value || 'Хароҷот';
-                    const amt = parseFloat(row.querySelector('.expense-amount').value) || 0;
-                    if (amt > 0) {
-                        data.push([desc, amt]);
-                    }
-                });
-            }
-
-            data.push([]);
-            data.push(['НАҚД ДАР СЕЙФ', (parseFloat(summarySafeCash.textContent.replace(/[^\d]/g, '')) || 0)]);
-            data.push(['БЕЗНАЛ ДАР СЕЙФ', (parseFloat(summarySafeCashless.textContent.replace(/[^\d]/g, '')) || 0)]);
-
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            XLSX.utils.book_append_sheet(wb, ws, 'Ҳисобот');
-            XLSX.writeFile(wb, `hisobot_${currentShop}_${reportDate.value}.xlsx`);
-        });
 
         function updateMonthlyData() {
             if (!currentShop) return;
@@ -1506,13 +2012,13 @@
                     if (exp.category && categorySums.hasOwnProperty(exp.category)) {
                         categorySums[exp.category] += exp.amt;
                     }
-                    expenseStr += exp.desc + ': ' + (exp.amt || 0).toLocaleString('ru-RU') + '₽ ';
+                    expenseStr += `${exp.desc}: ${exp.amt.toLocaleString('ru-RU')}₽ `;
                 });
                 
                 const date = report.date.split('-').reverse().slice(0,2).join('.');
                 dailyRows += `
                     <div class="table-row">
-                        <div class="table-date">${date}</div>
+                        <div class="table-date" data-date="${report.date}">${date}</div>
                         <div class="table-amount">${(report.totalRevenue || 0).toLocaleString('ru-RU')}</div>
                         <div class="table-amount">${(report.cashRevenue || 0).toLocaleString('ru-RU')}</div>
                         <div class="table-amount">${(report.cashlessRevenue || 0).toLocaleString('ru-RU')}</div>
@@ -1528,17 +2034,21 @@
             
             dailyTable.innerHTML = dailyRows || '<div class="table-row">Ҳисобот нест</div>';
             
-            updateChart(categorySums, expenseSum);
-            updateCategoriesTable(categorySums, expenseSum);
-        }
-
-        function updateChart(categorySums, totalExpense) {
+            document.querySelectorAll('.table-date').forEach(el => {
+                el.addEventListener('click', function() {
+                    const date = this.dataset.date;
+                    reportDate.value = date;
+                    loadReportByDate(date);
+                    navTabs[1].click();
+                });
+            });
+            
             const maxValue = Math.max(...Object.values(categorySums), 1);
             let bars = '';
             
             expenseCategories.forEach(cat => {
                 const value = categorySums[cat] || 0;
-                const height = maxValue > 0 ? Math.max(2, (value / maxValue * 100)) : 2;
+                const height = maxValue > 0 ? (value / maxValue * 80) : 0;
                 
                 bars += `
                     <div class="bar-container">
@@ -1549,14 +2059,11 @@
             });
             
             expenseChart.innerHTML = bars;
-        }
-
-        function updateCategoriesTable(categorySums, totalExpense) {
-            let rows = '';
             
+            let rows = '';
             expenseCategories.forEach(cat => {
                 const amount = categorySums[cat] || 0;
-                const percent = totalExpense > 0 ? ((amount / totalExpense) * 100).toFixed(1) : 0;
+                const percent = expenseSum > 0 ? ((amount / expenseSum) * 100).toFixed(1) : 0;
                 
                 rows += `
                     <div class="cat-table-row">
@@ -1581,22 +2088,7 @@
         });
 
         exportMonthlyBtn.addEventListener('click', function() {
-            const data = [
-                ['ҲИСОБОТИ МОҲОНА'],
-                ['Мағоза:', currentShop],
-                ['Моҳ:', currentMonthSpan.textContent],
-                [],
-                ['Нишондиҳанда', 'Маблағ (сӯм)'],
-                ['Фурӯши умумӣ', parseFloat(monthlyTotal.textContent) || 0],
-                ['Нақд', parseFloat(monthlyCash.textContent) || 0],
-                ['Безнал', parseFloat(monthlyCashless.textContent) || 0],
-                ['Хароҷот', parseFloat(monthlyExpense.textContent) || 0]
-            ];
-            
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            XLSX.utils.book_append_sheet(wb, ws, 'Моҳона');
-            XLSX.writeFile(wb, `monthly_${currentShop}_${currentMonthSpan.textContent}.xlsx`);
+            alert('Экспорти моҳона барои ' + currentMonthSpan.textContent);
         });
 
         function updateHistory() {
@@ -1619,20 +2111,22 @@
             let html = '';
             filtered.forEach(report => {
                 const totalExpenses = (report.expenses || []).reduce((sum, exp) => sum + (exp.amt || 0), 0);
+                const dateFormatted = report.date.split('-').reverse().join('.');
                 
                 html += `
                     <div class="history-item">
                         <div class="history-item-header">
-                            <span class="history-date">${report.date}</span>
+                            <span class="history-date">${dateFormatted}</span>
                             <span class="history-admin">${report.admin}</span>
                         </div>
                         <div class="history-stats">
                             <div>Фурӯш: <span class="history-total">${(report.totalRevenue || 0).toLocaleString('ru-RU')} ₽</span></div>
                             <div>Нақд: ${(report.cashRevenue || 0).toLocaleString('ru-RU')} ₽</div>
                             <div>Безнал: ${(report.cashlessRevenue || 0).toLocaleString('ru-RU')} ₽</div>
-                            <div>Хароҷот: ${totalExpenses.toLocaleString('ru-RU')} ₽</div>
+                            <div>Хароҷот: <span class="history-expenses">${totalExpenses.toLocaleString('ru-RU')} ₽</span></div>
                         </div>
-                        <button class="history-delete" data-id="${report.id}">Нест кардан</button>
+                        ${report.photoData ? `<img src="${report.photoData}" class="history-photo" onclick="showPhoto('${report.photoData}')">` : ''}
+                        <button class="history-delete" data-id="${report.id}">НЕСТ КАРДАН</button>
                     </div>
                 `;
             });
@@ -1652,6 +2146,21 @@
             });
         }
 
+        window.showPhoto = function(photoData) {
+            modalImage.src = photoData;
+            photoModal.classList.add('active');
+        };
+
+        closeModal.addEventListener('click', function() {
+            photoModal.classList.remove('active');
+        });
+
+        photoModal.addEventListener('click', function(e) {
+            if (e.target === photoModal) {
+                photoModal.classList.remove('active');
+            }
+        });
+
         document.getElementById('historyDateFilter').addEventListener('change', updateHistory);
 
         backToShopBtn.addEventListener('click', function() {
@@ -1667,7 +2176,7 @@
         });
 
         updateAll();
-        updateProgressBar();
+        updateDate();
     })();
 </script>
 </body>
