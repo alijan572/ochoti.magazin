@@ -1232,7 +1232,7 @@
 
         <div class="admin-field">
             <label>АДМИНИСТРАТОР</label>
-            <input type="text" id="adminName" placeholder="Ном ва насаб" value="">
+            <input type="text" id="adminName" placeholder="Ному насаб" value="Аҳмадов">
         </div>
 
         <!-- Прикрепление фото чека -->
@@ -1304,7 +1304,7 @@
             <div class="summary-header">
                 <span id="summaryShop">F-1</span>
                 <span id="summaryDate">16.03.2026</span>
-                <span id="summaryAdmin">-</span>
+                <span id="summaryAdmin">Аҳмадов</span>
             </div>
             
             <div class="summary-totals">
@@ -1430,6 +1430,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
     (function() {
         // Маълумотҳои ибтидоӣ
@@ -1584,6 +1585,14 @@
         const photoPreview = document.getElementById('photoPreview');
         const photoInfo = document.getElementById('photoInfo');
 
+        // Функция для обновления даты в блоке summary
+        function updateSummaryDate() {
+            const d = reportDate.value.split('-');
+            if (d.length === 3) {
+                summaryDate.textContent = `${d[2]}.${d[1]}.${d[0]}`;
+            }
+        }
+
         // Функция для загрузки данных по дате
         function loadReportByDate(date) {
             if (!currentShop) return;
@@ -1591,7 +1600,7 @@
             const savedReport = reportsHistory.find(r => r.shop === currentShop && r.date === date);
             
             if (savedReport) {
-                adminName.value = savedReport.admin || '';
+                adminName.value = savedReport.admin || 'Админ';
                 totalRevenue.value = savedReport.totalRevenue || 0;
                 cashlessRevenue.value = savedReport.cashlessRevenue || 0;
                 returnCash.value = savedReport.returnCash || 0;
@@ -1630,7 +1639,7 @@
                     safeCashless.textContent = (savedReport.safeCashless || shopData[currentShop]?.cashless || 0).toLocaleString('ru-RU');
                 }
             } else {
-                adminName.value = '';
+                adminName.value = 'Аҳмадов';
                 totalRevenue.value = 0;
                 cashlessRevenue.value = 0;
                 returnCash.value = 0;
@@ -1647,6 +1656,7 @@
                 safeCashless.textContent = data.cashless.toLocaleString('ru-RU');
             }
             
+            updateSummaryDate();
             updateAll();
         }
 
@@ -1674,13 +1684,6 @@
             
             navTabs[1].click();
         });
-
-        function updateDate() {
-            const d = reportDate.value.split('-');
-            if (d.length === 3) {
-                summaryDate.textContent = `${d[2]}.${d[1]}.${d[0]}`;
-            }
-        }
 
         function addExpenseRow(desc = '', type = 'cash', category = 'БОР (Товар)', amount = 0) {
             const row = document.createElement('div');
@@ -1764,8 +1767,7 @@
             summarySafeCash.textContent = finalCash.toLocaleString('ru-RU') + ' ₽';
             summarySafeCashless.textContent = finalCashless.toLocaleString('ru-RU') + ' ₽';
             
-            // Показываем имя администратора или прочерк
-            summaryAdmin.textContent = adminName.value.trim() || '-';
+            summaryAdmin.textContent = adminName.value.trim() || 'Админ';
             
             if (expenseItems.length === 0) {
                 summaryExpensesList.innerHTML = '<div class="expense-summary-item">Хароҷот нест</div>';
@@ -1850,7 +1852,7 @@
                 id: Date.now().toString(),
                 shop: currentShop,
                 date: reportDate.value,
-                admin: adminName.value.trim() || '',
+                admin: adminName.value.trim() || 'Админ',
                 totalRevenue: total,
                 cashRevenue: cash,
                 cashlessRevenue: cashless,
@@ -1883,6 +1885,10 @@
         async function createReportZip() {
             const zip = new JSZip();
             
+            // Обновляем дату перед созданием скриншота
+            updateSummaryDate();
+            updateAll();
+            
             // Добавляем скриншот отчёта
             const originalBlock = document.getElementById('summaryBlock');
             const cloneBlock = originalBlock.cloneNode(true);
@@ -1907,12 +1913,13 @@
             
             // Конвертируем canvas в blob
             const reportBlob = await new Promise(resolve => canvas.toBlob(resolve));
-            zip.file(`hisobot_${currentShop}_${summaryDate.textContent}.png`, reportBlob);
+            const dateStr = summaryDate.textContent.replace(/\./g, '-');
+            zip.file(`hisobot_${currentShop}_${dateStr}.png`, reportBlob);
             
             // Добавляем фото чека если есть
             if (currentPhotoData) {
                 const photoBlob = await fetch(currentPhotoData).then(res => res.blob());
-                zip.file(`chek_${currentShop}_${summaryDate.textContent}.jpg`, photoBlob);
+                zip.file(`chek_${currentShop}_${dateStr}.jpg`, photoBlob);
             }
             
             // Создаём и возвращаем ZIP
@@ -1922,18 +1929,15 @@
         // Обновлённая функция для МУБОДИЛА
         shareBtn.addEventListener('click', async function() {
             updateAll();
+            updateSummaryDate();
             
             try {
                 // Показываем сообщение о подготовке
                 reportMessage.textContent = '⏳ Тайёр кардани ҳисобот...';
                 
-                // Загружаем JSZip если ещё не загружен
-                if (typeof JSZip === 'undefined') {
-                    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
-                }
-                
                 const zipBlob = await createReportZip();
-                const zipFile = new File([zipBlob], `hisobot_${currentShop}_${summaryDate.textContent}.zip`, { type: 'application/zip' });
+                const dateStr = summaryDate.textContent.replace(/\./g, '-');
+                const zipFile = new File([zipBlob], `hisobot_${currentShop}_${dateStr}.zip`, { type: 'application/zip' });
                 
                 reportMessage.textContent = '';
                 
@@ -1946,7 +1950,7 @@
                     // Если нельзя поделиться, скачиваем ZIP
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(zipBlob);
-                    link.download = `hisobot_${currentShop}_${summaryDate.textContent}.zip`;
+                    link.download = `hisobot_${currentShop}_${dateStr}.zip`;
                     link.click();
                     URL.revokeObjectURL(link.href);
                 }
@@ -1956,17 +1960,6 @@
                 setTimeout(() => reportMessage.textContent = '', 3000);
             }
         });
-
-        // Функция для загрузки скрипта
-        function loadScript(src) {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
 
         function downloadCanvas(canvas) {
             const link = document.createElement('a');
@@ -2117,7 +2110,7 @@
                     <div class="history-item">
                         <div class="history-item-header">
                             <span class="history-date">${dateFormatted}</span>
-                            <span class="history-admin">${report.admin || '-'}</span>
+                            <span class="history-admin">${report.admin}</span>
                         </div>
                         <div class="history-stats">
                             <div>Фурӯш: <span class="history-total">${(report.totalRevenue || 0).toLocaleString('ru-RU')} ₽</span></div>
@@ -2175,11 +2168,10 @@
             navTabs[0].click();
         });
 
+        // Инициализация
+        updateSummaryDate();
         updateAll();
-        updateDate();
     })();
 </script>
-<!-- Добавляем JSZip для создания архивов -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </body>
 </html>
