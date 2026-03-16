@@ -1232,7 +1232,7 @@
 
         <div class="admin-field">
             <label>АДМИНИСТРАТОР</label>
-            <input type="text" id="adminName" placeholder="Ному насаб" value="Аҳмадов">
+            <input type="text" id="adminName" placeholder="Ном ва насаб" value="">
         </div>
 
         <!-- Прикрепление фото чека -->
@@ -1304,7 +1304,7 @@
             <div class="summary-header">
                 <span id="summaryShop">F-1</span>
                 <span id="summaryDate">16.03.2026</span>
-                <span id="summaryAdmin">Аҳмадов</span>
+                <span id="summaryAdmin">-</span>
             </div>
             
             <div class="summary-totals">
@@ -1591,7 +1591,7 @@
             const savedReport = reportsHistory.find(r => r.shop === currentShop && r.date === date);
             
             if (savedReport) {
-                adminName.value = savedReport.admin || 'Админ';
+                adminName.value = savedReport.admin || '';
                 totalRevenue.value = savedReport.totalRevenue || 0;
                 cashlessRevenue.value = savedReport.cashlessRevenue || 0;
                 returnCash.value = savedReport.returnCash || 0;
@@ -1630,7 +1630,7 @@
                     safeCashless.textContent = (savedReport.safeCashless || shopData[currentShop]?.cashless || 0).toLocaleString('ru-RU');
                 }
             } else {
-                adminName.value = 'Аҳмадов';
+                adminName.value = '';
                 totalRevenue.value = 0;
                 cashlessRevenue.value = 0;
                 returnCash.value = 0;
@@ -1764,7 +1764,8 @@
             summarySafeCash.textContent = finalCash.toLocaleString('ru-RU') + ' ₽';
             summarySafeCashless.textContent = finalCashless.toLocaleString('ru-RU') + ' ₽';
             
-            summaryAdmin.textContent = adminName.value.trim() || 'Админ';
+            // Показываем имя администратора или прочерк
+            summaryAdmin.textContent = adminName.value.trim() || '-';
             
             if (expenseItems.length === 0) {
                 summaryExpensesList.innerHTML = '<div class="expense-summary-item">Хароҷот нест</div>';
@@ -1849,7 +1850,7 @@
                 id: Date.now().toString(),
                 shop: currentShop,
                 date: reportDate.value,
-                admin: adminName.value.trim() || 'Админ',
+                admin: adminName.value.trim() || '',
                 totalRevenue: total,
                 cashRevenue: cash,
                 cashlessRevenue: cashless,
@@ -2116,7 +2117,7 @@
                     <div class="history-item">
                         <div class="history-item-header">
                             <span class="history-date">${dateFormatted}</span>
-                            <span class="history-admin">${report.admin}</span>
+                            <span class="history-admin">${report.admin || '-'}</span>
                         </div>
                         <div class="history-stats">
                             <div>Фурӯш: <span class="history-total">${(report.totalRevenue || 0).toLocaleString('ru-RU')} ₽</span></div>
